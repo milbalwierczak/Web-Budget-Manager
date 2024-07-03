@@ -15,16 +15,17 @@
         <link href="https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic" rel="stylesheet" type="text/css" />
         <link href="css/styles.css" rel="stylesheet" />
     </head>
+
     <body id="page-top">
         <!-- Navigation-->
         <nav class="navbar navbar-expand-lg navbar-light fixed-top py-3" id="mainNav">
             <div class="container px-4 px-lg-5">
-                <a class="navbar-brand" href="#page-top">Budget Manager</a>
+                <a class="navbar-brand" href="./index.html">Budget Manager</a>
                 <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                     <ul class="navbar-nav ms-auto my-2 my-lg-0">
                         <li class="nav-item"><a class="nav-link" href="#about">Zarejestruj się</a></li>
-                        <li class="nav-item"><a class="nav-link" href="./login.html">Zaloguj się</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#services">Zaloguj się</a></li>
                     </ul>
                 </div>
             </div>
@@ -33,19 +34,33 @@
         <header class="masthead">
             <div class="container px-4 px-lg-5 h-100">
                 <div class="row gx-4 gx-lg-5 h-100 align-items-center justify-content-center text-center">
-                    <div class="col-lg-8 align-self-end">
-                        <h1 class="text-white font-weight-bold">Zapanuj nad swoimi finansami!</h1>
-                        <hr class="divider" />
-                    </div>
-                    <div class="col-lg-8 align-self-baseline">
-                        <p class="text-white-75 mb-5">Załóż konto i skorzystaj z naszej aplikacji do zarządzania budżetem osobistym! Śledź przychody i wydatki, kontroluj finanse i osiągaj swoje cele finansowe. Dołącz do nas już dziś!</p>
-                        <a class="btn btn-primary btn-xl me-sm-4 mb-3 mb-sm-0" href="#about">Zarejestruj się</a>
-                        <a class="btn btn-outline-secondary btn-xl mb-3 mb-sm-0" href="./login.html" style="box-shadow:0px 0px 0px 2px white inset; color: white">Zaloguj się</a>
-                    </div>
+                    <main class="form-signin col-10 col-md-6 col-xl-4 m-auto">
+                        <form>
+                          <h1 class="text-white font-weight-bold mb-5 mt-0">Witaj ponownie!</h1>
+                      
+                          <div class="form-floating mb-3">
+                            <input type="email" class="form-control" id="floatingInput" placeholder="">
+                            <label for="floatingInput"><i class="bi bi-envelope"></i> Email</label>
+                          </div>
+                          <div class="form-floating">
+                            <input type="password" class="form-control" id="floatingPassword" placeholder="">
+                            <label for="floatingPassword"><i class="bi bi-key"></i> Hasło</label>
+                          </div>
+                      
+                          <div class="form-check text-start my-3">
+                            <input class="form-check-input" type="checkbox" value="remember-me" id="flexCheckDefault">
+                            <label class="form-check-label text-white" for="flexCheckDefault">
+                              Zapamiętaj mnie
+                            </label>
+                          </div>
+                          <button class="btn btn-primary btn-xl col-12 col-sm-6 py-3 my-3" type="submit">Zaloguj się</button>
+                        </form>
+                    </main>
                 </div>
             </div>
         </header>
     </body>
+
     <footer class="bg-light py-5">
         <div class="container px-4 px-lg-5"><div class="small text-center text-muted">Copyright &copy; 2024 - Miłosz Balwierczak</div></div>
     </footer>
