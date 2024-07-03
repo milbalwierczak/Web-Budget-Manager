@@ -15,17 +15,19 @@
         <link href="https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic" rel="stylesheet" type="text/css" />
         <link href="css/styles.css" rel="stylesheet" />
     </head>
-
     <body id="page-top">
         <!-- Navigation-->
         <nav class="navbar navbar-expand-lg navbar-light fixed-top py-3" id="mainNav">
             <div class="container px-4 px-lg-5">
-                <a class="navbar-brand" href="./index.html">Budget Manager</a>
+                <a class="navbar-brand" href="#page-top">Budget Manager</a>
                 <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                     <ul class="navbar-nav ms-auto my-2 my-lg-0">
-                        <li class="nav-item"><a class="nav-link" href="./register.html"><i class="bi bi-person-plus"></i> Zarejestruj się</a></li>
-                        <li class="nav-item"><a class="nav-link" href="./login.html"><i class="bi bi-box-arrow-in-right"></i> Zaloguj się</a></li>
+                        <li class="nav-item"><a class="nav-link" href="./home.html"><i class="bi bi-house"></i> Strona główna</a></li>
+                        <li class="nav-item"><a class="nav-link">+ Dodaj przychód</a></li>
+                        <li class="nav-item"><a class="nav-link">- Dodaj wydatek</a></li>
+                        <li class="nav-item"><a class="nav-link"><i class="bi bi-graph-up"></i> Przeglądaj bilans</a></li>
+                        <li class="nav-item"><a class="nav-link" href="./index.html"><i class="bi bi-box-arrow-right"></i> Wyloguj się</a></li>
                     </ul>
                 </div>
             </div>
@@ -34,33 +36,23 @@
         <header class="masthead">
             <div class="container px-4 px-lg-5 h-100">
                 <div class="row gx-4 gx-lg-5 h-100 align-items-center justify-content-center text-center">
-                    <main class="form-signin col-10 col-md-6 col-xl-4 m-auto">
-                        <form>
-                          <h1 class="text-white font-weight-bold mb-5 mt-0">Witaj ponownie!</h1>
-                      
-                          <div class="form-floating mb-3">
-                            <input type="email" class="form-control" id="floatingInput" placeholder="">
-                            <label for="floatingInput"><i class="bi bi-envelope"></i> Email</label>
-                          </div>
-                          <div class="form-floating">
-                            <input type="password" class="form-control" id="floatingPassword" placeholder="">
-                            <label for="floatingPassword"><i class="bi bi-key"></i> Hasło</label>
-                          </div>
-                      
-                          <div class="form-check text-start my-3">
-                            <input class="form-check-input" type="checkbox" value="remember-me" id="flexCheckDefault">
-                            <label class="form-check-label text-white" for="flexCheckDefault">
-                              Zapamiętaj mnie
-                            </label>
-                          </div>
-                          <a class="btn btn-primary btn-xl col-12 col-sm-6 py-3 my-3" href="./home.html" type="submit">Zaloguj się</a>
-                        </form>
-                    </main>
+                    <div class="col-lg-8 align-self-end">
+                        <h1 class="text-white font-weight-bold mb-0 ">Cześć Miłosz!</h1>
+                    </div>
+                    <div class="col-lg-8 align-self-baseline">
+                        <h2 class="text-white-75">Twój bilans w tym miesiącu wynosi 1234,56 zł</h2>
+                        <hr class="divider">
+                        <p class="text-white fs-2">Cytat na dzisiaj:</p>
+                        <p class="text-start text-white-75 fst-italic fs-4">Nawyk zarządzania pieniędzmi jest ważniejszy niż ilość posiadanych pieniędzy.</p>
+                        <p class="text-end text-white-75 mb-5">T. HARV EKER</p>
+                        <a class="btn btn-success btn-xl me-sm-4 mb-3 mb-sm-0">+ Dodaj przychód</a>
+                        <a class="btn btn-danger btn-xl me-sm-4 mb-3 mb-sm-0">- Dodaj wydatek</a>
+                        <a class="btn btn-primary btn-xl mb-3 mb-sm-0"><i class="bi bi-graph-up"></i> Przeglądaj bilans</a>
+                    </div>
                 </div>
             </div>
         </header>
     </body>
-
     <footer class="bg-light py-5">
         <div class="container px-4 px-lg-5"><div class="small text-center text-muted">Copyright &copy; 2024 - Miłosz Balwierczak</div></div>
     </footer>
