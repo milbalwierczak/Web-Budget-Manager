@@ -51,9 +51,26 @@ window.addEventListener('DOMContentLoaded', event => {
         });
     });
 
-    // Activate SimpleLightbox plugin for portfolio items
+    // Activate SimpleLightbox plugin for portfolio itemss
     new SimpleLightbox({
         elements: '#portfolio a.portfolio-box'
     });
 
+});
+
+window.onload = function() {
+    if (window.jQuery) {  
+        // jQuery is loaded  
+        alert("Yeah!");
+    } else {
+        // jQuery is not loaded
+        alert("Doesn't Work");
+    }
+}
+
+$('#floatingDate').datepicker({
+    format: "mm-dd-yyyy",
+    maxViewMode: 0,
+    language: "pl",
+    todayHighlight: true
 });
