@@ -43,27 +43,37 @@
                       
                           <div class="form-floating mb-3">
                             <input type="email" class="form-control" id="floatingInput" placeholder="">
-                            <label for="floatingInput"><i class="bi bi-envelope"></i> Wartość</label>
+                            <label for="floatingInput"><i class="bi bi-currency-dollar"></i> Wartość</label>
                           </div>
                           <div class="form-floating mb-3">
                             <input type="text" class="form-control" id="floatingDate" placeholder="">
-                            <label for="floatingDate"><i class="bi bi-key"></i> Data</label>
+                            <label for="floatingDate"><i class="bi bi-calendar3"></i> Data</label>
                           </div>
                           <div class="form-floating mb-3">
-                            <input type="password" class="form-control" id="floatingPassword" placeholder="">
-                            <label for="floatingPassword"><i class="bi bi-key"></i> Hasło</label>
+                            <select class="form-control" placeholder="" id="floatingCategory">
+                                <option>Rachunki</option>
+                                <option>Jedzenie</option>
+                                <option>Odzież</option>
+                                <option>Rozrywka</option>
+                                <option>Inne</option>
+                            </select>
+                            <label for="floatingCategory"><i class="bi bi-tag"></i> Kategoria</label>
                           </div>
+
                           <div class="form-floating mb-3">
                             <input type="password" class="form-control" id="floatingPassword" placeholder="">
-                            <label for="floatingPassword"><i class="bi bi-key"></i> Opis</label>
+                            <label for="floatingPassword"><i class="bi bi-pencil"></i> Opis</label>
                           </div>
                       
-                          <a class="btn btn-primary btn-xl col-12 col-sm-6 py-3 my-3" href="./home.html" type="submit">Zaloguj się</a>
+                          <a class="btn btn-primary btn-xl col-12 col-sm-6 py-3 my-3" href="./home.html" type="submit">Dodaj wydatek</a>
                         </form>
                     </main>
                 </div>
             </div>
         </header>
+        <script type="text/javascript">
+            createEditableSelect(document.forms[0].myText);
+            </script>
     </body>
 
     <footer class="bg-light py-5">
@@ -76,6 +86,8 @@
     </script>    
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.css" rel="stylesheet"/>
     <script src="./js/bootstrap-datepicker.pl.min.js"></script>
+    <script src="./js/jquery-editable-select.js"></script>
+    <link href="./css/jquery-editable-select.css" rel="stylesheet"/>
     <!-- Bootstrap core JS-->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- SimpleLightbox plugin JS-->
@@ -87,4 +99,5 @@
     <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
     <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
     <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
+
 </html>

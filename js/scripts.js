@@ -58,19 +58,11 @@ window.addEventListener('DOMContentLoaded', event => {
 
 });
 
-window.onload = function() {
-    if (window.jQuery) {  
-        // jQuery is loaded  
-        alert("Yeah!");
-    } else {
-        // jQuery is not loaded
-        alert("Doesn't Work");
-    }
-}
-
 $('#floatingDate').datepicker({
     format: "mm-dd-yyyy",
     maxViewMode: 0,
     language: "pl",
     todayHighlight: true
 });
+
+$("#floatingCategory").editableSelect();
