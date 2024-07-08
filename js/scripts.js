@@ -7,6 +7,10 @@
 // Scripts
 // 
 
+$( ".description" ).on( "click", function() {
+    alert( "Opis wydatku/przychodu." );
+  } );
+
 window.addEventListener('DOMContentLoaded', event => {
 
     // Navbar shrink function
@@ -57,3 +61,6 @@ window.addEventListener('DOMContentLoaded', event => {
     });
 
 });
+
+Chart.defaults.color = 'white';
+Chart.defaults.font.size = 14;

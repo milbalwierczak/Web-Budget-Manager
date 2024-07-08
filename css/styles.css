@@ -10993,3 +10993,33 @@ header.masthead h1, header.masthead .h1 {
 #portfolio .container-fluid .portfolio-box:hover .portfolio-box-caption, #portfolio .container-sm .portfolio-box:hover .portfolio-box-caption, #portfolio .container-md .portfolio-box:hover .portfolio-box-caption, #portfolio .container-lg .portfolio-box:hover .portfolio-box-caption, #portfolio .container-xl .portfolio-box:hover .portfolio-box-caption, #portfolio .container-xxl .portfolio-box:hover .portfolio-box-caption {
   opacity: 1;
 }
+
+.table-wrapper {
+  max-height: 200px;
+  overflow: auto;
+  display:inline-block;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  background-color: var(--bs-primary);
+}
+
+.table-striped > tbody > tr:nth-child(2n+1) > td, .table-striped > tbody > tr:nth-child(2n+1) > th {
+  color: var(--bs-gray-500);
+}
+
+@media (max-width: 576px) {
+  .table-wrapper {
+    max-height: 400px;
+  }
+}
+
+canvas {
+  color: white;
+  padding: 0;
+  margin: auto;
+  display: block;
+  width: 800px;
+}
