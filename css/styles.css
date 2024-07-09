@@ -10994,6 +10994,12 @@ header.masthead h1, header.masthead .h1 {
   opacity: 1;
 }
 
+.datepicker td,th{
+  text-align: center;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
 .table-wrapper {
   max-height: 200px;
   overflow: auto;

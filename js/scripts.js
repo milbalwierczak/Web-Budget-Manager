@@ -55,12 +55,21 @@ window.addEventListener('DOMContentLoaded', event => {
         });
     });
 
-    // Activate SimpleLightbox plugin for portfolio items
+    // Activate SimpleLightbox plugin for portfolio itemss
     new SimpleLightbox({
         elements: '#portfolio a.portfolio-box'
     });
 
 });
+
+$('#floatingDate').datepicker({
+    format: "mm-dd-yyyy",
+    maxViewMode: 0,
+    language: "pl",
+    todayHighlight: true
+});
+
+$("#floatingCategory").editableSelect();
 
 Chart.defaults.color = 'white';
 Chart.defaults.font.size = 14;
