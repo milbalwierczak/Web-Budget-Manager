@@ -8,7 +8,7 @@
 // 
 
 $( ".description" ).on( "click", function() {
-    alert( "Opis wydatku/przychodu." );
+    alert( "Opis wydatku/przychodu. Opcja edycji i usunięcia" );
   } );
 
 window.addEventListener('DOMContentLoaded', event => {
