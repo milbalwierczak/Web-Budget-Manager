@@ -61,15 +61,3 @@ window.addEventListener('DOMContentLoaded', event => {
     });
 
 });
-
-$('#floatingDate').datepicker({
-    format: "mm-dd-yyyy",
-    maxViewMode: 0,
-    language: "pl",
-    todayHighlight: true
-});
-
-$("#floatingCategory").editableSelect();
-
-Chart.defaults.color = 'white';
-Chart.defaults.font.size = 14;
