@@ -11025,3 +11025,8 @@ canvas {
   width: 800px;
 }
 
+.error {
+  color: red;
+  font-size: small;
+  height: 10px;
+}

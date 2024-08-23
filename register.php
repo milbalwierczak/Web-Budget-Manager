@@ -5,137 +5,94 @@
 	{
 		$validation_OK=true;
 
-		$nick = $_POST['nick'];
+		$name = $_POST['name'];
 		
-		//Sprawdzenie długości nicka
-		if ((strlen($nick)<3) || (strlen($nick)>20))
+		if ((strlen($name)<3) || (strlen($name)>50))
 		{
-			$wszystko_OK=false;
-			$_SESSION['e_nick']="Nick musi posiadać od 3 do 20 znaków!";
+			$validation_OK=false;
+			$_SESSION['e_name']="Imię musi posiadać od 3 do 50 znaków!";
 		}
 		
-		if (ctype_alnum($nick)==false)
+		else if (!preg_match('/(?![×÷])[A-Za-zÀ-ÿ]/', $name))
 		{
-			$wszystko_OK=false;
-			$_SESSION['e_nick']="Nick może składać się tylko z liter i cyfr (bez polskich znaków)";
+			$validation_OK=false;
+			$_SESSION['e_name']="Imię może składać się tylko z liter";
 		}
-		
-		// Sprawdź poprawność adresu email
+
 		$email = $_POST['email'];
 		$emailB = filter_var($email, FILTER_SANITIZE_EMAIL);
 		
 		if ((filter_var($emailB, FILTER_VALIDATE_EMAIL)==false) || ($emailB!=$email))
 		{
-			$wszystko_OK=false;
+			$validation_OK=false;
 			$_SESSION['e_email']="Podaj poprawny adres e-mail!";
 		}
 		
 		//Sprawdź poprawność hasła
-		$haslo1 = $_POST['haslo1'];
-		$haslo2 = $_POST['haslo2'];
+		$password1 = $_POST['password1'];
+		$password2 = $_POST['password2'];
 		
-		if ((strlen($haslo1)<8) || (strlen($haslo1)>20))
+		if ((strlen($password1)<8) || (strlen($password1)>20))
 		{
-			$wszystko_OK=false;
-			$_SESSION['e_haslo']="Hasło musi posiadać od 8 do 20 znaków!";
+			$validation_OK=false;
+			$_SESSION['e_password']="Hasło musi posiadać od 8 do 20 znaków!";
 		}
 		
-		if ($haslo1!=$haslo2)
+		if ($password1!=$password2)
 		{
-			$wszystko_OK=false;
-			$_SESSION['e_haslo']="Podane hasła nie są identyczne!";
+			$validation_OK=false;
+			$_SESSION['e_password']="Podane hasła nie są identyczne!";
 		}	
 
-		$haslo_hash = password_hash($haslo1, PASSWORD_DEFAULT);
-		
-		//Czy zaakceptowano regulamin?
-		if (!isset($_POST['regulamin']))
-		{
-			$wszystko_OK=false;
-			$_SESSION['e_regulamin']="Potwierdź akceptację regulaminu!";
-		}				
+		$password_h = password_hash($password1, PASSWORD_DEFAULT);
 		
 		//Bot or not? Oto jest pytanie!
-		$sekret = "6LcjRCUqAAAAAGk2sBVYXwYSAJzcoHDG2sJr_4PT";
+		$secret = "6Le1UiUqAAAAAAwig1K-UaQ-UF2W9vKdy7t0h2cR";
 		
-		$sprawdz = file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret='.$sekret.'&response='.$_POST['g-recaptcha-response']);
+		$chceck_captcha = file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret='.$secret.'&response='.$_POST['g-recaptcha-response']);
 		
-		$odpowiedz = json_decode($sprawdz);
+		$answer = json_decode($chceck_captcha);
 		
-		if ($odpowiedz->success==false)
+		if ($answer->success==false)
 		{
-			$wszystko_OK=false;
+			$validation_OK=false;
 			$_SESSION['e_bot']="Potwierdź, że nie jesteś botem!";
 		}		
 		
 		//Zapamiętaj wprowadzone dane
-		$_SESSION['fr_nick'] = $nick;
+		$_SESSION['fr_name'] = $name;
 		$_SESSION['fr_email'] = $email;
-		$_SESSION['fr_haslo1'] = $haslo1;
-		$_SESSION['fr_haslo2'] = $haslo2;
-		if (isset($_POST['regulamin'])) $_SESSION['fr_regulamin'] = true;
+		$_SESSION['fr_password1'] = $password1;
+		$_SESSION['fr_password2'] = $password2;
 		
-		require_once "connect.php";
-		mysqli_report(MYSQLI_REPORT_STRICT);
+		require_once 'database.php';
 		
-		try 
-		{
-			$polaczenie = new mysqli($host, $db_user, $db_password, $db_name);
-			if ($polaczenie->connect_errno!=0)
-			{
-				throw new Exception(mysqli_connect_errno());
-			}
-			else
-			{
-				//Czy email już istnieje?
-				$rezultat = $polaczenie->query("SELECT id FROM uzytkownicy WHERE email='$email'");
-				
-				if (!$rezultat) throw new Exception($polaczenie->error);
-				
-				$ile_takich_maili = $rezultat->num_rows;
-				if($ile_takich_maili>0)
-				{
-					$wszystko_OK=false;
-					$_SESSION['e_email']="Istnieje już konto przypisane do tego adresu e-mail!";
-				}		
+		$result = $db->prepare("SELECT * FROM users WHERE email=:mail");
+		$result->execute(array(':mail' => $email));
 
-				//Czy nick jest już zarezerwowany?
-				$rezultat = $polaczenie->query("SELECT id FROM uzytkownicy WHERE user='$nick'");
-				
-				if (!$rezultat) throw new Exception($polaczenie->error);
-				
-				$ile_takich_nickow = $rezultat->num_rows;
-				if($ile_takich_nickow>0)
-				{
-					$wszystko_OK=false;
-					$_SESSION['e_nick']="Istnieje już gracz o takim nicku! Wybierz inny.";
-				}
-				
-				if ($wszystko_OK==true)
-				{
-					//Hurra, wszystkie testy zaliczone, dodajemy gracza do bazy
-					
-					if ($polaczenie->query("INSERT INTO uzytkownicy VALUES (NULL, '$nick', '$haslo_hash', '$email', 100, 100, 100, 14)"))
-					{
-						$_SESSION['udanarejestracja']=true;
-						header('Location: witamy.php');
-					}
-					else
-					{
-						throw new Exception($polaczenie->error);
-					}
-					
-				}
-				
-				$polaczenie->close();
-			}
+
+		if($result->rowCount() > 0){
+			$validation_OK=false;
+			$_SESSION['e_email']="Istnieje już konto przypisane do tego adresu e-mail!";			
+		}
+
+		if ($validation_OK==true)
+		{
+			//Hurra, wszystkie testy zaliczone, dodajemy gracza do bazy
+							
+		$query = $db->prepare('INSERT INTO users VALUES (NULL, :username, :password, :email)');
+		$query->bindValue(':username', $name, PDO::PARAM_STR);
+		$query->bindValue(':password', $password_h, PDO::PARAM_STR);
+		$query->bindValue(':email', $email, PDO::PARAM_STR);
+		$query->execute();
+
+		$_SESSION['udanarejestracja']=true;
+		header('Location: witamy.php');
 			
 		}
-		catch(Exception $e)
-		{
-			echo '<span style="color:red;">Błąd serwera! Przepraszamy za niedogodności i prosimy o rejestrację w innym terminie!</span>';
-			echo '<br />Informacja developerska: '.$e;
-		}
+		
+		$db = null;
+			
 		
 	}
 	
@@ -181,32 +138,58 @@
             <div class="container px-4 px-lg-5 h-100">
                 <div class="row gx-4 gx-lg-5 h-100 align-items-center justify-content-center text-center">
                     <div class="form-signin col-10 col-md-6 col-xl-4 m-auto">
-                        <form>
+                        <form method="post">
                           <h1 class="text-white font-weight-bold my-0">Rejestracja</h1>
                           <hr class="divider">
-                          <div class="form-floating mb-3">
-                            <input type="email" class="form-control" id="floatingName" placeholder="">
+                          <div class="form-floating mt-3">
+                            <input type="text" class="form-control" id="floatingName" placeholder="" name="name">
                             <label for="floatingName"><i class="bi bi-person"></i> Imię</label>
                           </div>
 
-                          <div class="form-floating mb-3">
-                            <input type="email" class="form-control" id="floatingEmail" placeholder="">
+						  <?php
+						  if (isset($_SESSION['e_name']))
+						  {
+							  echo '<div class="error">'.$_SESSION['e_name'].'</div>';
+							  unset($_SESSION['e_name']);
+						  }
+						?>		
+					  
+
+                          <div class="form-floating mt-3">
+                            <input type="email" class="form-control" id="floatingEmail" placeholder="" name="email">
                             <label for="floatingEmail"><i class="bi bi-envelope"></i> Email</label>
                           </div>
+
+						  <?php
+						  if (isset($_SESSION['e_email']))
+						  {
+							  echo '<div class="error">'.$_SESSION['e_email'].'</div>';
+							  unset($_SESSION['e_email']);
+						  }
+						?>	
                           
-                          <div class="form-floating mb-3">
-                            <input type="password" class="form-control" id="floatingPassword" placeholder="">
+                          <div class="form-floating mt-3">
+                            <input type="password" class="form-control" id="floatingPassword" placeholder="" name="password1">
                             <label for="floatingPassword"><i class="bi bi-key"></i> Hasło</label>
                           </div>
 
-                          <div class="form-floating mb-3">
-                            <input type="password" class="form-control" id="floatingPasswordRepeat" placeholder="">
+						  <?php
+						  if (isset($_SESSION['e_password']))
+						  {
+							  echo '<div class="error">'.$_SESSION['e_password'].'</div>';
+							  unset($_SESSION['e_password']);
+						  }
+						?>	
+
+                          <div class="form-floating mt-3">
+                            <input type="password" class="form-control" id="floatingPasswordRepeat" placeholder="" name="password2">
                             <label for="floatingPasswordRepeat"><i class="bi bi-key"></i> Powtórz Hasło</label>
                           </div>
-                         		
-		                  <div class="g-recaptcha" data-sitekey="6Le1UiUqAAAAAB6kjiZE_wUpJpMU3XOj4L2rezLa"></div>
+
+                        		
+		                  <div class="g-recaptcha mt-3" data-sitekey="6Le1UiUqAAAAAB6kjiZE_wUpJpMU3XOj4L2rezLa"></div>
                       
-                          <a class="btn btn-primary btn-xl col-12 col-sm-6 py-3 my-3" href="./home.html">Załóż konto</a>
+                          <input type="submit" value="Załóż konto"  class="btn btn-primary btn-xl col-12 col-sm-6 py-3 my-3"/>
                         </form>
                     </div>
                 </div>
