@@ -86,8 +86,8 @@
 		$query->bindValue(':email', $email, PDO::PARAM_STR);
 		$query->execute();
 
-		$_SESSION['udanarejestracja']=true;
-		header('Location: witamy.php');
+		$_SESSION['register_success']=true;
+		header('Location: welcome.php');
 			
 		}
 		
@@ -116,7 +116,10 @@
         <link href="https://fonts.googleapis.com/css?family=Merriweather+Sans:400,700" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic" rel="stylesheet" type="text/css">
         <link href="css/styles.css" rel="stylesheet">
-        <script src="https://www.google.com/recaptcha/api.js"></script>
+        <script src="https://www.google.com/recaptcha/api.js"></script>		
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/gh/cowboy/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js"></script>
+
     </head>
 
     <body id="page-top">
@@ -139,7 +142,7 @@
                 <div class="row gx-4 gx-lg-5 h-100 align-items-center justify-content-center text-center">
                     <div class="form-signin col-10 col-md-6 col-xl-4 m-auto">
                         <form method="post">
-                          <h1 class="text-white font-weight-bold my-0">Rejestracja</h1>
+                          <h2 class="text-white font-weight-bold my-0">Rejestracja</h2>
                           <hr class="divider">
                           <div class="form-floating mt-3">
                             <input type="text" class="form-control" id="floatingName" placeholder="" name="name">
@@ -186,8 +189,16 @@
                             <label for="floatingPasswordRepeat"><i class="bi bi-key"></i> Powtórz Hasło</label>
                           </div>
 
-                        		
-		                  <div class="g-recaptcha mt-3" data-sitekey="6Le1UiUqAAAAAB6kjiZE_wUpJpMU3XOj4L2rezLa"></div>
+						  <div class="text-xs-center">
+		                  	<div class="g-recaptcha mt-3" data-sitekey="6Le1UiUqAAAAAB6kjiZE_wUpJpMU3XOj4L2rezLa"></div>
+						  </div>
+						  <?php
+						  if (isset($_SESSION['e_bot']))
+						  {
+							  echo '<div class="error">'.$_SESSION['e_bot'].'</div>';
+							  unset($_SESSION['e_bot']);
+						  }
+						?>	
                       
                           <input type="submit" value="Załóż konto"  class="btn btn-primary btn-xl col-12 col-sm-6 py-3 my-3"/>
                         </form>
