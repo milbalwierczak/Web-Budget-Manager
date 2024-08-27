@@ -1,3 +1,29 @@
+<?php
+
+	session_start();
+	
+	if (!isset($_SESSION['register_success']))
+	{
+		header('Location: index.html');
+		exit();
+	}
+	else
+	{
+		unset($_SESSION['register_success']);
+	}
+	
+	//Usuwanie zmiennych pamiętających wartości wpisane do formularza
+	if (isset($_SESSION['fr_name'])) unset($_SESSION['fr_name']);
+	if (isset($_SESSION['fr_email'])) unset($_SESSION['fr_email']);
+	
+	//Usuwanie błędów rejestracji
+	if (isset($_SESSION['e_name'])) unset($_SESSION['e_name']);
+	if (isset($_SESSION['e_email'])) unset($_SESSION['e_email']);
+	if (isset($_SESSION['e_password'])) unset($_SESSION['e_password']);
+	if (isset($_SESSION['e_bot'])) unset($_SESSION['e_bot']);
+	
+?>
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -24,7 +50,7 @@
                 <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                     <ul class="navbar-nav ms-auto my-2 my-lg-0">
-                        <li class="nav-item"><a class="nav-link" href="./register.html"><i class="bi bi-person-plus"></i> Zarejestruj się</a></li>
+                        <li class="nav-item"><a class="nav-link" href="./register.php"><i class="bi bi-person-plus"></i> Zarejestruj się</a></li>
                         <li class="nav-item"><a class="nav-link" href="./login.html"><i class="bi bi-box-arrow-in-right"></i> Zaloguj się</a></li>
                     </ul>
                 </div>
@@ -36,37 +62,15 @@
                 <div class="row gx-4 gx-lg-5 h-100 align-items-center justify-content-center text-center">
                     <div class="form-signin col-10 col-md-6 col-xl-4 m-auto">
                         <form>
-                          <h1 class="text-white font-weight-bold my-0">Rejestracja</h1>
+                          <h2 class="text-white font-weight-bold mb-5 mt-0">Konto założone pomyślnie!</h2>
                           <hr class="divider">
-                          <p class="text-white-75 mb-5">Wypełnij poniższe pola i dołącz do naszej społeczności! Ciesz się pełną kontrolą nad swoim budżetem i osiągaj swoje finansowe cele razem z nami.</p>
-                          
-                          <div class="form-floating mb-3">
-                            <input type="email" class="form-control" id="floatingName" placeholder="">
-                            <label for="floatingName"><i class="bi bi-person"></i> Imię</label>
-                          </div>
-
-                          <div class="form-floating mb-3">
-                            <input type="email" class="form-control" id="floatingEmail" placeholder="">
-                            <label for="floatingEmail"><i class="bi bi-envelope"></i> Email</label>
-                          </div>
-                          
-                          <div class="form-floating mb-3">
-                            <input type="password" class="form-control" id="floatingPassword" placeholder="">
-                            <label for="floatingPassword"><i class="bi bi-key"></i> Hasło</label>
-                          </div>
-
-                          <div class="form-floating mb-3">
-                            <input type="password" class="form-control" id="floatingPasswordRepeat" placeholder="">
-                            <label for="floatingPasswordRepeat"><i class="bi bi-key"></i> Powtórz Hasło</label>
-                          </div>
-                      
-                          <a class="btn btn-primary btn-xl col-12 col-sm-6 py-3 my-3" href="./home.html">Załóż konto</a>
+                          <a class="btn btn-primary btn-xl col-12 col-sm-6 py-3 my-3" href="./login.html">Strona logowania</a>
                         </form>
                     </div>
                 </div>
             </div>
         </header>
-        
+            
         <footer class="bg-light py-5">
             <div class="container px-4 px-lg-5"><div class="small text-center text-muted">Copyright &copy; 2024 - Miłosz Balwierczak</div></div>
         </footer>
