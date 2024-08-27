@@ -62,8 +62,6 @@
 		//Zapamiętaj wprowadzone dane
 		$_SESSION['fr_name'] = $name;
 		$_SESSION['fr_email'] = $email;
-		$_SESSION['fr_password1'] = $password1;
-		$_SESSION['fr_password2'] = $password2;
 		
 		require_once 'database.php';
 		
@@ -145,7 +143,14 @@
                           <h2 class="text-white font-weight-bold my-0">Rejestracja</h2>
                           <hr class="divider">
                           <div class="form-floating mt-3">
-                            <input type="text" class="form-control" id="floatingName" placeholder="" name="name">
+                            <input type="text" class="form-control" id="floatingName" placeholder="" 
+								<?php
+									if (isset($_SESSION['fr_name']))
+									{
+										echo 'value="'.$_SESSION['fr_name'].'"';
+										unset($_SESSION['fr_name']);
+									}
+								?> name="name">
                             <label for="floatingName"><i class="bi bi-person"></i> Imię</label>
                           </div>
 
@@ -159,7 +164,14 @@
 					  
 
                           <div class="form-floating mt-3">
-                            <input type="email" class="form-control" id="floatingEmail" placeholder="" name="email">
+                            <input type="email" class="form-control" id="floatingEmail" placeholder=""  
+								<?php
+									if (isset($_SESSION['fr_email']))
+									{
+										echo 'value="'.$_SESSION['fr_email'].'"';
+										unset($_SESSION['fr_email']);
+									}
+								?> name="email">
                             <label for="floatingEmail"><i class="bi bi-envelope"></i> Email</label>
                           </div>
 

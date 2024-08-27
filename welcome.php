@@ -15,8 +15,6 @@
 	//Usuwanie zmiennych pamiętających wartości wpisane do formularza
 	if (isset($_SESSION['fr_name'])) unset($_SESSION['fr_name']);
 	if (isset($_SESSION['fr_email'])) unset($_SESSION['fr_email']);
-	if (isset($_SESSION['fr_password1'])) unset($_SESSION['fr_password1']);
-	if (isset($_SESSION['fr_password2'])) unset($_SESSION['fr_password2']);
 	
 	//Usuwanie błędów rejestracji
 	if (isset($_SESSION['e_name'])) unset($_SESSION['e_name']);
@@ -64,7 +62,7 @@
                 <div class="row gx-4 gx-lg-5 h-100 align-items-center justify-content-center text-center">
                     <div class="form-signin col-10 col-md-6 col-xl-4 m-auto">
                         <form>
-                          <h1 class="text-white font-weight-bold mb-5 mt-0">Konto założone pomyślnie!</h1>
+                          <h2 class="text-white font-weight-bold mb-5 mt-0">Konto założone pomyślnie!</h2>
                           <hr class="divider">
                           <a class="btn btn-primary btn-xl col-12 col-sm-6 py-3 my-3" href="./login.html">Strona logowania</a>
                         </form>
