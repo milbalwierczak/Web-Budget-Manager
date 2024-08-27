@@ -129,7 +129,7 @@
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                     <ul class="navbar-nav ms-auto my-2 my-lg-0">
                         <li class="nav-item"><a class="nav-link" href="./register.php"><i class="bi bi-person-plus"></i> Zarejestruj się</a></li>
-                        <li class="nav-item"><a class="nav-link" href="./login.html"><i class="bi bi-box-arrow-in-right"></i> Zaloguj się</a></li>
+                        <li class="nav-item"><a class="nav-link" href="./login.php"><i class="bi bi-box-arrow-in-right"></i> Zaloguj się</a></li>
                     </ul>
                 </div>
             </div>

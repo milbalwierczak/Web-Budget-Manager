@@ -51,7 +51,7 @@
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                     <ul class="navbar-nav ms-auto my-2 my-lg-0">
                         <li class="nav-item"><a class="nav-link" href="./register.php"><i class="bi bi-person-plus"></i> Zarejestruj się</a></li>
-                        <li class="nav-item"><a class="nav-link" href="./login.html"><i class="bi bi-box-arrow-in-right"></i> Zaloguj się</a></li>
+                        <li class="nav-item"><a class="nav-link" href="./login.php"><i class="bi bi-box-arrow-in-right"></i> Zaloguj się</a></li>
                     </ul>
                 </div>
             </div>
@@ -64,7 +64,7 @@
                         <form>
                           <h2 class="text-white font-weight-bold mb-5 mt-0">Konto założone pomyślnie!</h2>
                           <hr class="divider">
-                          <a class="btn btn-primary btn-xl col-12 col-sm-6 py-3 my-3" href="./login.html">Strona logowania</a>
+                          <a class="btn btn-primary btn-xl col-12 col-sm-6 py-3 my-3" href="./login.php">Strona logowania</a>
                         </form>
                     </div>
                 </div>
