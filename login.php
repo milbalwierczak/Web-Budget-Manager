@@ -11,6 +11,8 @@
 			$validation_OK=false;
 			$_SESSION['e_email']="Podaj poprawny adres e-mail!";
 		}
+        
+		$_SESSION['fr_email'] = $email;
 
         $password = $_POST['password'];
 
@@ -30,7 +32,7 @@
 			$_SESSION['logged_in'] = true;
             $_SESSION['logged_user_id'] = $row['id'];
             $_SESSION['logged_user_name'] = $row['username'];            
-		    header('Location: home.html');
+		    header('Location: home.php');
             		
 		}
 
@@ -67,7 +69,7 @@
         <!-- Navigation-->
         <nav class="navbar navbar-expand-lg navbar-light fixed-top py-3" id="mainNav">
             <div class="container px-4 px-lg-5">
-                <a class="navbar-brand" href="./index.html">Budget Manager</a>
+                <a class="navbar-brand" href="./index.php">Budget Manager</a>
                 <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                     <ul class="navbar-nav ms-auto my-2 my-lg-0">
@@ -86,7 +88,14 @@
                           <h1 class="text-white font-weight-bold mb-5 mt-0">Witaj ponownie!</h1>
                       
                           <div class="form-floating">
-                            <input type="email" class="form-control" id="floatingInput" placeholder="" name="email">
+                            <input type="email" class="form-control" id="floatingInput" placeholder=""  
+								<?php
+									if (isset($_SESSION['fr_email']))
+									{
+										echo 'value="'.$_SESSION['fr_email'].'"';
+										unset($_SESSION['fr_email']);
+									}
+								?> name="email">
                             <label for="floatingInput"><i class="bi bi-envelope"></i> Email</label>
                           </div>
 

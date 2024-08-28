@@ -1,3 +1,23 @@
+<?php
+
+	session_start();
+	
+	if (!isset($_SESSION['logged_in']))
+	{
+		header('Location: index.php');
+		exit();
+	}
+
+	//Usuwanie zmiennych pamiętających wartości wpisane do formularza
+	if (isset($_SESSION['fr_email'])) unset($_SESSION['fr_email']);
+	
+	//Usuwanie błędów rejestracji
+	if (isset($_SESSION['e_email'])) unset($_SESSION['e_email']);
+	if (isset($_SESSION['e_wrong'])) unset($_SESSION['e_wrong']);
+	
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -23,11 +43,11 @@
                 <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                     <ul class="navbar-nav ms-auto my-2 my-lg-0">
-                        <li class="nav-item"><a class="nav-link" href="./home.html"><i class="bi bi-house"></i> Strona główna</a></li>
+                        <li class="nav-item"><a class="nav-link" href="./home.php"><i class="bi bi-house"></i> Strona główna</a></li>
                         <li class="nav-item"><a class="nav-link">+ Dodaj przychód</a></li>
                         <li class="nav-item"><a class="nav-link" href="./expense.html">- Dodaj wydatek</a></li>
                         <li class="nav-item"><a class="nav-link" href="./balance.html"><i class="bi bi-graph-up"></i> Przeglądaj bilans</a></li>
-                        <li class="nav-item"><a class="nav-link" href="./index.html"><i class="bi bi-box-arrow-right"></i> Wyloguj się</a></li>
+                        <li class="nav-item"><a class="nav-link" href="./index.php"><i class="bi bi-box-arrow-right"></i> Wyloguj się</a></li>
                     </ul>
                 </div>
             </div>
@@ -37,7 +57,13 @@
             <div class="container px-4 px-lg-5 h-100">
                 <div class="row gx-4 gx-lg-5 h-100 align-items-center justify-content-center text-center">
                     <div class="col-lg-8 align-self-end">
-                        <h1 class="text-white font-weight-bold mb-0 ">Cześć Miłosz!</h1>
+                        <h1 class="text-white font-weight-bold mb-0 ">Cześć 
+                          <?php
+						  if (isset($_SESSION['logged_user_name']))
+						  {
+							  echo $_SESSION['logged_user_name'];
+						  }
+						?>!</h1>
                     </div>
                     <div class="col-lg-8 align-self-baseline">
                         <h2 class="text-white-75">Twój bilans w tym miesiącu wynosi 1234,56 zł</h2>
