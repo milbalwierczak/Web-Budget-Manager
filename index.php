@@ -1,3 +1,15 @@
+<?php
+
+	session_start();
+	
+	if (isset($_SESSION['logged_in']))
+	{
+		header('Location: home.php');
+		exit();
+	}
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -23,11 +35,8 @@
                 <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                     <ul class="navbar-nav ms-auto my-2 my-lg-0">
-                        <li class="nav-item"><a class="nav-link" href="./home.html"><i class="bi bi-house"></i> Strona główna</a></li>
-                        <li class="nav-item"><a class="nav-link">+ Dodaj przychód</a></li>
-                        <li class="nav-item"><a class="nav-link" href="./expense.html">- Dodaj wydatek</a></li>
-                        <li class="nav-item"><a class="nav-link" href="./balance.html"><i class="bi bi-graph-up"></i> Przeglądaj bilans</a></li>
-                        <li class="nav-item"><a class="nav-link" href="./index.html"><i class="bi bi-box-arrow-right"></i> Wyloguj się</a></li>
+                        <li class="nav-item"><a class="nav-link" href="./register.php"><i class="bi bi-person-plus"></i> Zarejestruj się</a></li>
+                        <li class="nav-item"><a class="nav-link" href="./login.php"><i class="bi bi-box-arrow-in-right"></i> Zaloguj się</a></li>
                     </ul>
                 </div>
             </div>
@@ -37,24 +46,21 @@
             <div class="container px-4 px-lg-5 h-100">
                 <div class="row gx-4 gx-lg-5 h-100 align-items-center justify-content-center text-center">
                     <div class="col-lg-8 align-self-end">
-                        <h1 class="text-white font-weight-bold mb-0 ">Cześć Miłosz!</h1>
+                        <h1 class="text-white font-weight-bold">Zapanuj nad swoimi finansami!</h1>
+                        <hr class="divider">
                     </div>
                     <div class="col-lg-8 align-self-baseline">
-                        <h2 class="text-white-75">Twój bilans w tym miesiącu wynosi 1234,56 zł</h2>
-                        <hr class="divider">
-                        <p class="text-white fs-2">Cytat na dzisiaj:</p>
-                        <p class="text-start text-white-75 fst-italic fs-4">Nawyk zarządzania pieniędzmi jest ważniejszy niż ilość posiadanych pieniędzy.</p>
-                        <p class="text-end text-white-75 mb-5">T. HARV EKER</p>
-                        <a class="btn btn-success btn-xl me-sm-4 mb-3 mb-sm-0">+ Dodaj przychód</a>
-                        <a class="btn btn-danger btn-xl me-sm-4 mb-3 mb-sm-0" href="./expense.html">- Dodaj wydatek</a>
-                        <a class="btn btn-primary btn-xl mb-3 mb-sm-0" href="./balance.html"><i class="bi bi-graph-up"></i> Przeglądaj bilans</a>
+                        <p class="text-white-75 mb-5">Załóż konto i skorzystaj z naszej aplikacji do zarządzania budżetem osobistym! Śledź przychody i wydatki, kontroluj finanse i osiągaj swoje cele finansowe. Dołącz do nas już dziś!</p>
+                        <a class="btn btn-primary btn-xl me-sm-4 mb-3 mb-sm-0" href="./register.php">Zarejestruj się</a>
+                        <a class="btn btn-outline-secondary btn-xl mb-3 mb-sm-0" href="./login.php" style="box-shadow:0px 0px 0px 2px white inset; color: white">Zaloguj się</a>
                     </div>
                 </div>
             </div>
         </header>
         <footer class="bg-light py-5">
             <div class="container px-4 px-lg-5"><div class="small text-center text-muted">Copyright &copy; 2024 - Miłosz Balwierczak</div></div>
-        </footer>
+        </footer>    
+        
         <!-- Bootstrap core JS-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
         <!-- SimpleLightbox plugin JS-->

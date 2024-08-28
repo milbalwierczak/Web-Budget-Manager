@@ -1,3 +1,52 @@
+<?php
+	session_start();
+
+	if (isset($_POST['email']))
+	{
+        $email = $_POST['email'];
+		$emailB = filter_var($email, FILTER_SANITIZE_EMAIL);
+		
+		if ((filter_var($emailB, FILTER_VALIDATE_EMAIL)==false) || ($emailB!=$email))
+		{
+			$validation_OK=false;
+			$_SESSION['e_email']="Podaj poprawny adres e-mail!";
+		}
+        
+		$_SESSION['fr_email'] = $email;
+
+        $password = $_POST['password'];
+
+		$password_h = password_hash($password, PASSWORD_DEFAULT);
+
+        require_once 'database.php';
+		
+		$query = $db->prepare("SELECT * FROM users WHERE email=:mail");
+		$query->bindValue(':mail', $email, PDO::PARAM_STR);
+        
+		$query->execute();
+
+        $row = $query->fetch(PDO::FETCH_ASSOC);
+
+
+		if($row && password_verify($password, $row['password'])){
+			$_SESSION['logged_in'] = true;
+            $_SESSION['logged_user_id'] = $row['id'];
+            $_SESSION['logged_user_name'] = $row['username'];            
+		    header('Location: home.php');
+            		
+		}
+
+        else {            
+			$_SESSION['e_wrong']= "Niepoprawny adres e-mail lub hasło!";
+        }
+		
+		$db = null;
+			
+		
+	}
+	
+?>
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -20,12 +69,12 @@
         <!-- Navigation-->
         <nav class="navbar navbar-expand-lg navbar-light fixed-top py-3" id="mainNav">
             <div class="container px-4 px-lg-5">
-                <a class="navbar-brand" href="./index.html">Budget Manager</a>
+                <a class="navbar-brand" href="./index.php">Budget Manager</a>
                 <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                     <ul class="navbar-nav ms-auto my-2 my-lg-0">
                         <li class="nav-item"><a class="nav-link" href="./register.php"><i class="bi bi-person-plus"></i> Zarejestruj się</a></li>
-                        <li class="nav-item"><a class="nav-link" href="./login.html"><i class="bi bi-box-arrow-in-right"></i> Zaloguj się</a></li>
+                        <li class="nav-item"><a class="nav-link" href="./login.php"><i class="bi bi-box-arrow-in-right"></i> Zaloguj się</a></li>
                     </ul>
                 </div>
             </div>
@@ -35,17 +84,40 @@
             <div class="container px-4 px-lg-5 h-100">
                 <div class="row gx-4 gx-lg-5 h-100 align-items-center justify-content-center text-center">
                     <div class="form-signin col-10 col-md-6 col-xl-4 m-auto">
-                        <form>
+                        <form method="post">
                           <h1 class="text-white font-weight-bold mb-5 mt-0">Witaj ponownie!</h1>
                       
-                          <div class="form-floating mb-3">
-                            <input type="email" class="form-control" id="floatingInput" placeholder="">
+                          <div class="form-floating">
+                            <input type="email" class="form-control" id="floatingInput" placeholder=""  
+								<?php
+									if (isset($_SESSION['fr_email']))
+									{
+										echo 'value="'.$_SESSION['fr_email'].'"';
+										unset($_SESSION['fr_email']);
+									}
+								?> name="email">
                             <label for="floatingInput"><i class="bi bi-envelope"></i> Email</label>
                           </div>
-                          <div class="form-floating">
-                            <input type="password" class="form-control" id="floatingPassword" placeholder="">
+
+                          <?php
+						  if (isset($_SESSION['e_email']))
+						  {
+							  echo '<div class="error">'.$_SESSION['e_email'].'</div>';
+							  unset($_SESSION['e_email']);
+						  }
+						?>
+                          <div class="form-floating mt-3">
+                            <input type="password" class="form-control" id="floatingPassword" placeholder="" name="password">
                             <label for="floatingPassword"><i class="bi bi-key"></i> Hasło</label>
                           </div>
+
+                          <?php
+						  if (isset($_SESSION['e_wrong']))
+						  {
+							  echo '<div class="error">'.$_SESSION['e_wrong'].'</div>';
+							  unset($_SESSION['e_wrong']);
+						  }
+						?>
                       
                           <div class="form-check text-start my-3">
                             <input class="form-check-input" type="checkbox" value="remember-me" id="flexCheckDefault">
@@ -53,7 +125,7 @@
                               Zapamiętaj mnie
                             </label>
                           </div>
-                          <a class="btn btn-primary btn-xl col-12 col-sm-6 py-3 my-3" href="./home.html">Zaloguj się</a>
+                          <input type="submit" value="Zaloguj się"  class="btn btn-primary btn-xl col-12 col-sm-6 py-3 my-3"/>
                         </form>
                     </div>
                 </div>
