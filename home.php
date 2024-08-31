@@ -14,6 +14,28 @@
 	//Usuwanie błędów rejestracji
 	if (isset($_SESSION['e_email'])) unset($_SESSION['e_email']);
 	if (isset($_SESSION['e_wrong'])) unset($_SESSION['e_wrong']);
+
+    require_once 'database.php';
+		
+    $query = $db->query("SELECT COUNT(*) FROM quotes");
+    $totalRows = $query->fetchColumn();
+
+    $today = date('Y-m-d');
+    srand(strtotime($today));
+    $randomId = rand(1, $totalRows); 
+
+    $query = $db->prepare("SELECT quote, author FROM quotes WHERE id = :id");
+    $query->bindValue(':id', $randomId, PDO::PARAM_INT);
+    $query->execute();
+    $result = $query->fetch(PDO::FETCH_ASSOC);
+
+    if ($result) {
+        $quote = $result['quote'];
+        $author = $result['author'];
+    } else {        
+        $quote = "Pieniądze są dobrym sługą, lecz złym panem.";
+        $author = "Francis Bacon";
+    }
 	
 ?>
 
@@ -69,8 +91,8 @@
                         <h2 class="text-white-75">Twój bilans w tym miesiącu wynosi 1234,56 zł</h2>
                         <hr class="divider">
                         <p class="text-white fs-2">Cytat na dzisiaj:</p>
-                        <p class="text-start text-white-75 fst-italic fs-4">Nawyk zarządzania pieniędzmi jest ważniejszy niż ilość posiadanych pieniędzy.</p>
-                        <p class="text-end text-white-75 mb-5">T. HARV EKER</p>
+                        <p class="text-start text-white-75 fst-italic fs-4"><?php echo $quote;?></p>
+                        <p class="text-end text-white-75 mb-5"><?php echo $author;?></p>
                         <a class="btn btn-success btn-xl me-sm-4 mb-3 mb-sm-0">+ Dodaj przychód</a>
                         <a class="btn btn-danger btn-xl me-sm-4 mb-3 mb-sm-0" href="./expense.html">- Dodaj wydatek</a>
                         <a class="btn btn-primary btn-xl mb-3 mb-sm-0" href="./balance.html"><i class="bi bi-graph-up"></i> Przeglądaj bilans</a>
