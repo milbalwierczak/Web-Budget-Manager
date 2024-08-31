@@ -67,7 +67,7 @@
                     <ul class="navbar-nav ms-auto my-2 my-lg-0">
                         <li class="nav-item"><a class="nav-link" href="./home.php"><i class="bi bi-house"></i> Strona główna</a></li>
                         <li class="nav-item"><a class="nav-link">+ Dodaj przychód</a></li>
-                        <li class="nav-item"><a class="nav-link" href="./expense.html">- Dodaj wydatek</a></li>
+                        <li class="nav-item"><a class="nav-link" href="./expense.php">- Dodaj wydatek</a></li>
                         <li class="nav-item"><a class="nav-link" href="./balance.html"><i class="bi bi-graph-up"></i> Przeglądaj bilans</a></li>
                         <li class="nav-item"><a class="nav-link" href="./logout.php"><i class="bi bi-box-arrow-right"></i> Wyloguj się</a></li>
                     </ul>
@@ -94,7 +94,7 @@
                         <p class="text-start text-white-75 fst-italic fs-4"><?php echo $quote;?></p>
                         <p class="text-end text-white-75 mb-5"><?php echo $author;?></p>
                         <a class="btn btn-success btn-xl me-sm-4 mb-3 mb-sm-0">+ Dodaj przychód</a>
-                        <a class="btn btn-danger btn-xl me-sm-4 mb-3 mb-sm-0" href="./expense.html">- Dodaj wydatek</a>
+                        <a class="btn btn-danger btn-xl me-sm-4 mb-3 mb-sm-0" href="./expense.php">- Dodaj wydatek</a>
                         <a class="btn btn-primary btn-xl mb-3 mb-sm-0" href="./balance.html"><i class="bi bi-graph-up"></i> Przeglądaj bilans</a>
                     </div>
                 </div>
