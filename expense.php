@@ -29,6 +29,14 @@
 		$validation_OK=true;
 
 		$value = $_POST['value'];
+		$date = $_POST['date'];
+        $description = $_POST['description'];
+        if (isset($_POST['category'])){
+            $category_name = $_POST['category'];  
+        }
+        if (isset($_POST['method'])){
+            $method_name = $_POST['method'];   
+        }
 		
         if (!preg_match('/^\d+(\.\d{2})?$/', $value))
 		{
@@ -36,8 +44,6 @@
 			$_SESSION['e_value']="Podaj poprawną wartość z dwoma miejscami po przecinku";
 		}
 
-		$date = $_POST['date'];
-		
         if (preg_match('/^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-(\d{4})$/', $date))
 		{
             list($day, $month, $year) = explode('-', $date);
@@ -46,13 +52,14 @@
                 $validation_OK=false;
                 $_SESSION['e_date']="Podaj poprawną datę w formacie dd-mm-rrrr";
             } 
+            else {
+                $formattedDate = DateTime::createFromFormat('d-m-Y', $date)->format('Y-m-d'); 
+            }
 		}
         else {            
 			$validation_OK=false;
 			$_SESSION['e_date']="Podaj poprawną datę w formacie dd-mm-rrrr";
         }
-
-        $description = $_POST['description'];
 		
         if (!preg_match('/^[A-Za-zÀ-ÿ0-9\s.,!?()\'-]*$/', $description))
 		{
@@ -83,29 +90,36 @@
         }
 		
 		if ($validation_OK==true)
-		{
-            
-		$_SESSION['expense_success']=true;
-        if (isset($_SESSION['fr_value'])) unset($_SESSION['fr_value']);
-        if (isset($_SESSION['fr_date'])) unset($_SESSION['fr_date']);
-        if (isset($_SESSION['fr_category'])) unset($_SESSION['fr_category']);
-        if (isset($_SESSION['fr_method'])) unset($_SESSION['fr_method']);
-        if (isset($_SESSION['fr_description'])) unset($_SESSION['fr_description']);
-        
-        //Usuwanie błędów rejestracji
-        if (isset($_SESSION['e_value'])) unset($_SESSION['e_ne_valueame']);
-        if (isset($_SESSION['e_date'])) unset($_SESSION['e_date']);
-        if (isset($_SESSION['e_description'])) unset($_SESSION['e_description']);
-        
-            /*
-		$query = $db->prepare('INSERT INTO users VALUES (NULL, :username, :password, :email)');
-		$query->bindValue(':username', $name, PDO::PARAM_STR);
-		$query->bindValue(':password', $password_h, PDO::PARAM_STR);
-		$query->bindValue(':email', $email, PDO::PARAM_STR);
-		$query->execute();
+		{            
+            $result = $db->prepare('SELECT id FROM expenses_category_assigned_to_users WHERE user_id = :user_id AND name = :category_name');
+            $result->bindValue(':user_id', $logged_user_id, PDO::PARAM_INT);
+            $result->bindValue(':category_name', $category_name, PDO::PARAM_STR);       
+            $result->execute();
+    
+            $row = $result->fetch(PDO::FETCH_ASSOC);
 
-		$_SESSION['register_success']=true;
-		header('Location: welcome.php');*/
+            $category_id = $row['id'];
+
+            $result = $db->prepare('SELECT id FROM payment_methods_assigned_to_users WHERE user_id = :user_id AND name = :method_name');
+            $result->bindValue(':user_id', $logged_user_id, PDO::PARAM_INT);
+            $result->bindValue(':method_name', $method_name, PDO::PARAM_STR);       
+            $result->execute();
+    
+            $row = $result->fetch(PDO::FETCH_ASSOC);
+
+            $method_id = $row['id'];
+
+            $query = $db->prepare('INSERT INTO expenses VALUES (NULL, :user_id, :category_id, :method_id, :value, :date, :description)');
+            $query->bindValue(':user_id', $logged_user_id, PDO::PARAM_INT);
+            $query->bindValue(':category_id', $category_id, PDO::PARAM_INT);
+            $query->bindValue(':method_id', $method_id, PDO::PARAM_INT);
+            $query->bindValue(':value', $value, PDO::PARAM_STR);
+            $query->bindValue(':date', $formattedDate, PDO::PARAM_STR);
+            $query->bindValue(':description', $description, PDO::PARAM_STR);
+            $query->execute();
+    
+            $_SESSION['expense_success']=true;
+            header('Location: expense_success.php');
 			
 		}
 		
@@ -268,10 +282,10 @@
                           <input type="submit" value="Dodaj wydatek" class="btn btn-primary btn-xl col-12 col-sm-6 py-3 my-3"/>
 
                         <?php
-						  if (isset($_SESSION['expense_success']))
+						  if (isset($_SESSION['expense_added']))
 						  {
 							  echo '<div class="success">Wydatek dodano pomyslnie!</div>';
-							  unset($_SESSION['expense_success']);
+							  unset($_SESSION['expense_added']);
 						  }
                           ?>	
                         </form>
