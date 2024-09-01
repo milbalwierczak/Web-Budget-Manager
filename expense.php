@@ -1,3 +1,108 @@
+<?php
+
+	session_start();
+	
+	if (!isset($_SESSION['logged_in']))
+	{
+		header('Location: index.php');
+		exit();
+	}
+
+    if (isset($_POST['value']))
+	{
+		$validation_OK=true;
+
+		$name = $_POST['name'];
+		
+		if ((strlen($name)<3) || (strlen($name)>50))
+		{
+			$validation_OK=false;
+			$_SESSION['e_name']="Imię musi posiadać od 3 do 50 znaków!";
+		}
+		
+		else if (!preg_match('/(?![×÷])[A-Za-zÀ-ÿ]/', $name))
+		{
+			$validation_OK=false;
+			$_SESSION['e_name']="Imię może składać się tylko z liter";
+		}
+
+		$email = $_POST['email'];
+		$emailB = filter_var($email, FILTER_SANITIZE_EMAIL);
+		
+		if ((filter_var($emailB, FILTER_VALIDATE_EMAIL)==false) || ($emailB!=$email))
+		{
+			$validation_OK=false;
+			$_SESSION['e_email']="Podaj poprawny adres e-mail!";
+		}
+		
+		//Sprawdź poprawność hasła
+		$password1 = $_POST['password1'];
+		$password2 = $_POST['password2'];
+		
+		if ((strlen($password1)<8) || (strlen($password1)>20))
+		{
+			$validation_OK=false;
+			$_SESSION['e_password']="Hasło musi posiadać od 8 do 20 znaków!";
+		}
+		
+		if ($password1!=$password2)
+		{
+			$validation_OK=false;
+			$_SESSION['e_password']="Podane hasła nie są identyczne!";
+		}	
+
+		$password_h = password_hash($password1, PASSWORD_DEFAULT);
+		
+		//Bot or not? Oto jest pytanie!
+		$secret = "6Le1UiUqAAAAAAwig1K-UaQ-UF2W9vKdy7t0h2cR";
+		
+		$chceck_captcha = file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret='.$secret.'&response='.$_POST['g-recaptcha-response']);
+		
+		$answer = json_decode($chceck_captcha);
+		
+		if ($answer->success==false)
+		{
+			$validation_OK=false;
+			$_SESSION['e_bot']="Potwierdź, że nie jesteś botem!";
+		}		
+		
+		//Zapamiętaj wprowadzone dane
+		$_SESSION['fr_name'] = $name;
+		$_SESSION['fr_email'] = $email;
+		
+		require_once 'database.php';
+		
+		$result = $db->prepare("SELECT * FROM users WHERE email=:mail");
+		$result->execute(array(':mail' => $email));
+
+
+		if($result->rowCount() > 0){
+			$validation_OK=false;
+			$_SESSION['e_email']="Istnieje już konto przypisane do tego adresu e-mail!";			
+		}
+
+		if ($validation_OK==true)
+		{
+			//Hurra, wszystkie testy zaliczone, dodajemy gracza do bazy
+							
+		$query = $db->prepare('INSERT INTO users VALUES (NULL, :username, :password, :email)');
+		$query->bindValue(':username', $name, PDO::PARAM_STR);
+		$query->bindValue(':password', $password_h, PDO::PARAM_STR);
+		$query->bindValue(':email', $email, PDO::PARAM_STR);
+		$query->execute();
+
+		$_SESSION['register_success']=true;
+		header('Location: welcome.php');
+			
+		}
+		
+		$db = null;
+
+    }
+	
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -38,19 +143,20 @@
             <div class="container px-4 px-lg-5 h-100">
                 <div class="row gx-4 gx-lg-5 h-100 align-items-center justify-content-center text-center">
                     <div class="form-signin col-10 col-md-6 col-xl-4 m-auto">
-                        <form>
+                        <form method="post">
                           <h2 class="text-white font-weight-bold mb-5 mt-0">Wprowadź dane</h2>
                       
                           <div class="form-floating mb-3">
-                            <input type="email" class="form-control" id="floatingInput" placeholder="">
+                            <input type="email" class="form-control" id="floatingInput" placeholder="" name="value">
                             <label for="floatingInput"><i class="bi bi-currency-dollar"></i> Wartość</label>
                           </div>
                           <div class="form-floating mb-3">
-                            <input type="text" class="form-control" id="floatingDate" placeholder="">
+                            <input type="text" class="form-control" id="floatingDate" placeholder="" name="date">
                             <label for="floatingDate"><i class="bi bi-calendar3"></i> Data</label>
                           </div>
                           <div class="form-floating mb-3">
-                            <select class="form-control" id="floatingCategory">
+                            <select class="form-select" id="floatingCategory" name="category">
+                                <option hidden disabled selected value></option>
                                 <option>Rachunki</option>
                                 <option>Jedzenie</option>
                                 <option>Odzież</option>
@@ -61,8 +167,18 @@
                           </div>
 
                           <div class="form-floating mb-3">
-                            <input type="password" class="form-control" id="floatingPassword" placeholder="">
-                            <label for="floatingPassword"><i class="bi bi-pencil"></i> Opis</label>
+                            <select class="form-select" id="floatingMethod" name="category">
+                                <option hidden disabled selected value></option>
+                                <option>Karta kredytowa</option>
+                                <option>Gotówka</option>
+                                <option>Karta debetowa</option>
+                            </select>                            
+                            <label for="floatingMethod"><i class="bi bi-credit-card"></i> Metoda płatności</label>
+                          </div>
+
+                          <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="floatingDescription" placeholder="" name="value">
+                            <label for="floatingDescription"><i class="bi bi-pencil"></i> Opis</label>
                           </div>
                       
                           <a class="btn btn-primary btn-xl col-12 col-sm-6 py-3 my-3" href="./home.php">Dodaj wydatek</a>
@@ -71,10 +187,6 @@
                 </div>
             </div>
         </header>
-        <script>
-            createEditableSelect(document.forms[0].myText);
-        </script>
-            
         <footer class="bg-light py-5">
             <div class="container px-4 px-lg-5"><div class="small text-center text-muted">Copyright &copy; 2024 - Miłosz Balwierczak</div></div>
         </footer>
@@ -98,6 +210,7 @@
         <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
         <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
         <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
+        <script src="./js/select.js"></script>
 
         <script>
             $('#floatingDate').datepicker({
@@ -106,8 +219,6 @@
                 language: "pl",
                 todayHighlight: true
             });
-
-            $("#floatingCategory").editableSelect();
 
         </script>
     </body>

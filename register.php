@@ -1,5 +1,12 @@
 <?php
 	session_start();
+		
+	if (isset($_SESSION['logged_in']))
+	{
+		header('Location: home.php');
+		exit();
+	}
+
 
 	if (isset($_POST['email']))
 	{
