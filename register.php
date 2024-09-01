@@ -91,6 +91,26 @@
 		$query->bindValue(':email', $email, PDO::PARAM_STR);
 		$query->execute();
 
+		$result = $db->prepare("SELECT * FROM users WHERE email=:mail");
+		$result->bindValue(':mail', $email, PDO::PARAM_STR);        
+		$result->execute();
+
+        $row = $result->fetch(PDO::FETCH_ASSOC);
+        $user_id = $row['id'];
+
+		$query = $db->prepare('INSERT INTO expenses_category_assigned_to_users (user_id, name) SELECT :user_id, name FROM expenses_category_default');
+		$query->bindValue(':user_id', $user_id, PDO::PARAM_STR);
+		$query->execute();
+
+		$query = $db->prepare('INSERT INTO incomes_category_assigned_to_users (user_id, name) SELECT :user_id, name FROM incomes_category_default');
+		$query->bindValue(':user_id', $user_id, PDO::PARAM_STR);
+		$query->execute();
+
+		$query = $db->prepare('INSERT INTO payment_methods_assigned_to_users (user_id, name) SELECT :user_id, name FROM payment_methods_default');
+		$query->bindValue(':user_id', $user_id, PDO::PARAM_STR);
+		$query->execute();
+
+
 		$_SESSION['register_success']=true;
 		header('Location: welcome.php');
 			
@@ -99,9 +119,7 @@
 		$db = null;
 			
 		
-	}
-	
-	
+	}	
 ?>
 
 
