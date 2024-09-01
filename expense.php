@@ -2,11 +2,27 @@
 
 	session_start();
 	
-	if (!isset($_SESSION['logged_in']))
+	if (!isset($_SESSION['logged_user_id']))
 	{
 		header('Location: index.php');
 		exit();
 	}
+    else {
+        $logged_user_id = $_SESSION['logged_user_id'];
+
+		require_once 'database.php';
+
+        $query = $db->prepare('SELECT name FROM expenses_category_assigned_to_users WHERE user_id = :user_id');
+        $query->bindValue(':user_id', $logged_user_id, PDO::PARAM_INT);
+        $query->execute();
+        $categories = $query->fetchAll(PDO::FETCH_ASSOC);
+
+        $query = $db->prepare('SELECT name FROM payment_methods_assigned_to_users WHERE user_id = :user_id');
+        $query->bindValue(':user_id', $logged_user_id, PDO::PARAM_INT);
+        $query->execute();
+        $methods = $query->fetchAll(PDO::FETCH_ASSOC);
+
+    }
 
     if (isset($_POST['value']))
 	{
@@ -65,8 +81,6 @@
 			$validation_OK=false;
 			$_SESSION['e_method']="Wybierz metodę płatności z listy";
         }
-		
-		require_once 'database.php';
 		
 		if ($validation_OK==true)
 		{
@@ -188,11 +202,14 @@
                           <div class="form-floating mt-3">
                             <select class="form-select <?php echo isset($_SESSION['fr_category']) ? 'has-value' : ''; ?>" id="floatingCategory" name="category">
                                 <option hidden disabled selected value></option>
-                                <option value="Rachunki" <?php if (isset($_SESSION['fr_category'])) {if ($_SESSION['fr_category'] == 'Rachunki') {echo 'selected'; unset($_SESSION['fr_category']);}}?>>Rachunki</option>
-                                <option value="Jedzenie" <?php if (isset($_SESSION['fr_category'])) {if ($_SESSION['fr_category'] == 'Jedzenie') {echo 'selected'; unset($_SESSION['fr_category']);}}?>>Jedzenie</option>
-                                <option value="Odzież"<?php if (isset($_SESSION['fr_category'])) {if ($_SESSION['fr_category'] == 'Odzież') {echo 'selected'; unset($_SESSION['fr_category']);}}?>>Odzież</option>
-                                <option value="Rozrywka" <?php if (isset($_SESSION['fr_category'])) {if ($_SESSION['fr_category'] == 'Rozrywka') {echo 'selected'; unset($_SESSION['fr_category']);}}?>>Rozrywka</option>
-                                <option value="Inne" <?php if (isset($_SESSION['fr_category'])) {if ($_SESSION['fr_category'] == 'Inne') {echo 'selected'; unset($_SESSION['fr_category']);}}?>>Inne</option>
+                                <?php foreach ($categories as $category): 
+                                    $selected = '';
+                                    if (isset($_SESSION['fr_category']) && $_SESSION['fr_category'] == $category['name']) {
+                                        $selected = 'selected';
+                                        unset($_SESSION['fr_category']);
+                                    }
+                                    echo '<option value="' . htmlspecialchars($category['name']) . '" ' . $selected . '>' . htmlspecialchars($category['name']) . '</option>';
+                                endforeach; ?>
                             </select>                            
                             <label for="floatingCategory"><i class="bi bi-tag"></i> Kategoria</label>
                           </div>
@@ -208,9 +225,14 @@
                           <div class="form-floating mt-3">
                             <select class="form-select <?php echo isset($_SESSION['fr_method']) ? 'has-value' : ''; ?>" id="floatingMethod" name="method">
                                 <option hidden disabled selected value></option>
-                                <option value="Karta kredytowa" <?php if (isset($_SESSION['fr_method'])) {if ($_SESSION['fr_method'] == 'Karta kredytowa') {echo 'selected'; unset($_SESSION['fr_method']);}}?>>Karta kredytowa</option>
-                                <option value="Gotówka" <?php if (isset($_SESSION['fr_method'])) {if ($_SESSION['fr_method'] == 'Gotówka') {echo 'selected'; unset($_SESSION['fr_method']);}}?>>Gotówka</option>
-                                <option value="Karta debetowa" <?php if (isset($_SESSION['fr_method'])) {if ($_SESSION['fr_method'] == 'Karta debetowa') {echo 'selected'; unset($_SESSION['fr_method']);}}?>>Karta debetowa</option>
+                                <?php foreach ($methods as $method): 
+                                    $selected = '';
+                                    if (isset($_SESSION['fr_method']) && $_SESSION['fr_method'] == $method['name']) {
+                                        $selected = 'selected';
+                                        unset($_SESSION['fr_method']);
+                                    }
+                                    echo '<option value="' . htmlspecialchars($method['name']) . '" ' . $selected . '>' . htmlspecialchars($method['name']) . '</option>';
+                                endforeach; ?>
                             </select>                            
                             <label for="floatingMethod"><i class="bi bi-credit-card"></i> Metoda płatności</label>
                           </div>
@@ -232,7 +254,7 @@
 										unset($_SESSION['fr_description']);
 									}
 								?> name="description">
-                            <label for="floatingDescription"><i class="bi bi-pencil"></i> Opis</label>
+                            <label for="floatingDescription"><i class="bi bi-pencil"></i> Opis (opcjonalnie)</label>
                           </div>
 
                           <?php
