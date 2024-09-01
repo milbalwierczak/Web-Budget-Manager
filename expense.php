@@ -147,8 +147,8 @@
                           <h2 class="text-white font-weight-bold mb-5 mt-0">Wprowadź dane</h2>
                       
                           <div class="form-floating mb-3">
-                            <input type="email" class="form-control" id="floatingInput" placeholder="" name="value">
-                            <label for="floatingInput"><i class="bi bi-currency-dollar"></i> Wartość</label>
+                            <input type="number" class="form-control" id="floatingValue" placeholder="" name="value">
+                            <label for="floatingValue"><i class="bi bi-currency-dollar"></i> Wartość</label>
                           </div>
                           <div class="form-floating mb-3">
                             <input type="text" class="form-control" id="floatingDate" placeholder="" name="date">
@@ -197,8 +197,6 @@
         </script>    
         <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.css" rel="stylesheet">
         <script src="./js/bootstrap-datepicker.pl.min.js"></script>
-        <script src="./js/jquery-editable-select.js"></script>
-        <link href="./css/jquery-editable-select.css" rel="stylesheet">
         <!-- Bootstrap core JS-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
         <!-- SimpleLightbox plugin JS-->
