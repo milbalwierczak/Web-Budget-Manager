@@ -12,15 +12,10 @@
 
 		require_once 'database.php';
 
-        $query = $db->prepare('SELECT name FROM expenses_category_assigned_to_users WHERE user_id = :user_id');
+        $query = $db->prepare('SELECT name FROM incomes_category_assigned_to_users WHERE user_id = :user_id');
         $query->bindValue(':user_id', $logged_user_id, PDO::PARAM_INT);
         $query->execute();
         $categories = $query->fetchAll(PDO::FETCH_ASSOC);
-
-        $query = $db->prepare('SELECT name FROM payment_methods_assigned_to_users WHERE user_id = :user_id');
-        $query->bindValue(':user_id', $logged_user_id, PDO::PARAM_INT);
-        $query->execute();
-        $methods = $query->fetchAll(PDO::FETCH_ASSOC);
 
     }
 
@@ -33,9 +28,6 @@
         $description = $_POST['description'];
         if (isset($_POST['category'])){
             $category_name = $_POST['category'];  
-        }
-        if (isset($_POST['method'])){
-            $method_name = $_POST['method'];   
         }
 		
         if (!preg_match('/^\d+(\.\d{2})?$/', $value))
@@ -79,19 +71,10 @@
 			$validation_OK=false;
 			$_SESSION['e_category']="Wybierz kategorię z listy";
         }
-
-
-		if (isset($_POST['method'])){
-            $_SESSION['fr_method'] = $_POST['method'];   
-        }
-        else {            
-			$validation_OK=false;
-			$_SESSION['e_method']="Wybierz metodę płatności z listy";
-        }
 		
 		if ($validation_OK==true)
 		{            
-            $result = $db->prepare('SELECT id FROM expenses_category_assigned_to_users WHERE user_id = :user_id AND name = :category_name');
+            $result = $db->prepare('SELECT id FROM incomes_category_assigned_to_users WHERE user_id = :user_id AND name = :category_name');
             $result->bindValue(':user_id', $logged_user_id, PDO::PARAM_INT);
             $result->bindValue(':category_name', $category_name, PDO::PARAM_STR);       
             $result->execute();
@@ -100,26 +83,16 @@
 
             $category_id = $row['id'];
 
-            $result = $db->prepare('SELECT id FROM payment_methods_assigned_to_users WHERE user_id = :user_id AND name = :method_name');
-            $result->bindValue(':user_id', $logged_user_id, PDO::PARAM_INT);
-            $result->bindValue(':method_name', $method_name, PDO::PARAM_STR);       
-            $result->execute();
-    
-            $row = $result->fetch(PDO::FETCH_ASSOC);
-
-            $method_id = $row['id'];
-
-            $query = $db->prepare('INSERT INTO expenses VALUES (NULL, :user_id, :category_id, :method_id, :value, :date, :description)');
+            $query = $db->prepare('INSERT INTO incomes VALUES (NULL, :user_id, :category_id, :value, :date, :description)');
             $query->bindValue(':user_id', $logged_user_id, PDO::PARAM_INT);
             $query->bindValue(':category_id', $category_id, PDO::PARAM_INT);
-            $query->bindValue(':method_id', $method_id, PDO::PARAM_INT);
             $query->bindValue(':value', $value, PDO::PARAM_STR);
             $query->bindValue(':date', $formattedDate, PDO::PARAM_STR);
             $query->bindValue(':description', $description, PDO::PARAM_STR);
             $query->execute();
     
-            $_SESSION['expense_success']=true;
-            header('Location: expense_success.php');
+            $_SESSION['income_success']=true;
+            header('Location: income_success.php');
 			
 		}
 		
@@ -237,29 +210,6 @@
                           ?>
 
                           <div class="form-floating mt-3">
-                            <select class="form-select <?php echo isset($_SESSION['fr_method']) ? 'has-value' : ''; ?>" id="floatingMethod" name="method">
-                                <option hidden disabled selected value></option>
-                                <?php foreach ($methods as $method): 
-                                    $selected = '';
-                                    if (isset($_SESSION['fr_method']) && $_SESSION['fr_method'] == $method['name']) {
-                                        $selected = 'selected';
-                                        unset($_SESSION['fr_method']);
-                                    }
-                                    echo '<option value="' . htmlspecialchars($method['name']) . '" ' . $selected . '>' . htmlspecialchars($method['name']) . '</option>';
-                                endforeach; ?>
-                            </select>                            
-                            <label for="floatingMethod"><i class="bi bi-credit-card"></i> Metoda płatności</label>
-                          </div>
-
-                          <?php
-						  if (isset($_SESSION['e_method']))
-						  {
-							  echo '<div class="error">'.$_SESSION['e_method'].'</div>';
-							  unset($_SESSION['e_method']);
-						  }
-                          ?>	
-
-                          <div class="form-floating mt-3">
                             <input type="text" class="form-control" id="floatingDescription" placeholder=""  
 								<?php
 									if (isset($_SESSION['fr_description']))
@@ -279,13 +229,13 @@
 						  }
 						  ?>	
                       
-                          <input type="submit" value="Dodaj wydatek" class="btn btn-primary btn-xl col-12 col-sm-6 py-3 my-3"/>
+                          <input type="submit" value="Dodaj przychód" class="btn btn-primary btn-xl col-12 col-sm-6 py-3 my-3"/>
 
                         <?php
-						  if (isset($_SESSION['expense_added']))
+						  if (isset($_SESSION['income_added']))
 						  {
-							  echo '<div class="success">Wydatek dodano pomyślnie!</div>';
-							  unset($_SESSION['expense_added']);
+							  echo '<div class="success">Przychód dodano pomyślnie!</div>';
+							  unset($_SESSION['income_added']);
 						  }
                           ?>	
                         </form>
