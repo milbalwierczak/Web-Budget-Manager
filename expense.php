@@ -12,79 +12,78 @@
 	{
 		$validation_OK=true;
 
-		$name = $_POST['name'];
+		$value = $_POST['value'];
 		
-		if ((strlen($name)<3) || (strlen($name)>50))
+        if (!preg_match('/^\d+(\.\d{2})?$/', $value))
 		{
 			$validation_OK=false;
-			$_SESSION['e_name']="Imię musi posiadać od 3 do 50 znaków!";
-		}
-		
-		else if (!preg_match('/(?![×÷])[A-Za-zÀ-ÿ]/', $name))
-		{
-			$validation_OK=false;
-			$_SESSION['e_name']="Imię może składać się tylko z liter";
+			$_SESSION['e_value']="Podaj poprawną wartość z dwoma miejscami po przecinku";
 		}
 
-		$email = $_POST['email'];
-		$emailB = filter_var($email, FILTER_SANITIZE_EMAIL);
+		$date = $_POST['date'];
 		
-		if ((filter_var($emailB, FILTER_VALIDATE_EMAIL)==false) || ($emailB!=$email))
+        if (preg_match('/^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-(\d{4})$/', $date))
 		{
-			$validation_OK=false;
-			$_SESSION['e_email']="Podaj poprawny adres e-mail!";
-		}
-		
-		//Sprawdź poprawność hasła
-		$password1 = $_POST['password1'];
-		$password2 = $_POST['password2'];
-		
-		if ((strlen($password1)<8) || (strlen($password1)>20))
-		{
-			$validation_OK=false;
-			$_SESSION['e_password']="Hasło musi posiadać od 8 do 20 znaków!";
-		}
-		
-		if ($password1!=$password2)
-		{
-			$validation_OK=false;
-			$_SESSION['e_password']="Podane hasła nie są identyczne!";
-		}	
+            list($day, $month, $year) = explode('-', $date);
 
-		$password_h = password_hash($password1, PASSWORD_DEFAULT);
+            if (!checkdate($month, $day, $year)) {              
+                $validation_OK=false;
+                $_SESSION['e_date']="Podaj poprawną datę w formacie dd-mm-rrrr";
+            } 
+		}
+        else {            
+			$validation_OK=false;
+			$_SESSION['e_date']="Podaj poprawną datę w formacie dd-mm-rrrr";
+        }
+
+        $description = $_POST['description'];
 		
-		//Bot or not? Oto jest pytanie!
-		$secret = "6Le1UiUqAAAAAAwig1K-UaQ-UF2W9vKdy7t0h2cR";
-		
-		$chceck_captcha = file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret='.$secret.'&response='.$_POST['g-recaptcha-response']);
-		
-		$answer = json_decode($chceck_captcha);
-		
-		if ($answer->success==false)
+        if (!preg_match('/^[A-Za-zÀ-ÿ0-9\s.,!?()\'-]*$/', $description))
 		{
 			$validation_OK=false;
-			$_SESSION['e_bot']="Potwierdź, że nie jesteś botem!";
-		}		
-		
+			$_SESSION['e_description']="Opis zawiera niedozwolone znaki!";
+		}
+
 		//Zapamiętaj wprowadzone dane
-		$_SESSION['fr_name'] = $name;
-		$_SESSION['fr_email'] = $email;
+		$_SESSION['fr_value'] = $value;
+		$_SESSION['fr_date'] = $date;      
+		$_SESSION['fr_description'] = $description;
+        
+		if (isset($_POST['category'])){
+            $_SESSION['fr_category'] = $_POST['category'];  
+        }
+        else {            
+			$validation_OK=false;
+			$_SESSION['e_category']="Wybierz kategorię z listy";
+        }
+
+
+		if (isset($_POST['method'])){
+            $_SESSION['fr_method'] = $_POST['method'];   
+        }
+        else {            
+			$validation_OK=false;
+			$_SESSION['e_method']="Wybierz metodę płatności z listy";
+        }
 		
 		require_once 'database.php';
 		
-		$result = $db->prepare("SELECT * FROM users WHERE email=:mail");
-		$result->execute(array(':mail' => $email));
-
-
-		if($result->rowCount() > 0){
-			$validation_OK=false;
-			$_SESSION['e_email']="Istnieje już konto przypisane do tego adresu e-mail!";			
-		}
-
 		if ($validation_OK==true)
 		{
-			//Hurra, wszystkie testy zaliczone, dodajemy gracza do bazy
-							
+            
+		$_SESSION['expense_success']=true;
+        if (isset($_SESSION['fr_value'])) unset($_SESSION['fr_value']);
+        if (isset($_SESSION['fr_date'])) unset($_SESSION['fr_date']);
+        if (isset($_SESSION['fr_category'])) unset($_SESSION['fr_category']);
+        if (isset($_SESSION['fr_method'])) unset($_SESSION['fr_method']);
+        if (isset($_SESSION['fr_description'])) unset($_SESSION['fr_description']);
+        
+        //Usuwanie błędów rejestracji
+        if (isset($_SESSION['e_value'])) unset($_SESSION['e_ne_valueame']);
+        if (isset($_SESSION['e_date'])) unset($_SESSION['e_date']);
+        if (isset($_SESSION['e_description'])) unset($_SESSION['e_description']);
+        
+            /*
 		$query = $db->prepare('INSERT INTO users VALUES (NULL, :username, :password, :email)');
 		$query->bindValue(':username', $name, PDO::PARAM_STR);
 		$query->bindValue(':password', $password_h, PDO::PARAM_STR);
@@ -92,7 +91,7 @@
 		$query->execute();
 
 		$_SESSION['register_success']=true;
-		header('Location: welcome.php');
+		header('Location: welcome.php');*/
 			
 		}
 		
@@ -146,42 +145,113 @@
                         <form method="post">
                           <h2 class="text-white font-weight-bold mb-5 mt-0">Wprowadź dane</h2>
                       
-                          <div class="form-floating mb-3">
-                            <input type="number" class="form-control" id="floatingValue" placeholder="" name="value">
+                          <div class="form-floating">
+                            <input type="number" class="form-control" id="floatingValue" placeholder=""  
+								<?php
+									if (isset($_SESSION['fr_value']))
+									{
+										echo 'value="'.$_SESSION['fr_value'].'"';
+										unset($_SESSION['fr_value']);
+									}
+								?> name="value">
                             <label for="floatingValue"><i class="bi bi-currency-dollar"></i> Wartość</label>
                           </div>
-                          <div class="form-floating mb-3">
-                            <input type="text" class="form-control" id="floatingDate" placeholder="" name="date">
+
+                          <?php
+						  if (isset($_SESSION['e_value']))
+						  {
+							  echo '<div class="error">'.$_SESSION['e_value'].'</div>';
+							  unset($_SESSION['e_value']);
+						  }
+						  ?>	
+
+                          <div class="form-floating mt-3">
+                            <input type="text" class="form-control" id="floatingDate" placeholder=""  
+								<?php
+									if (isset($_SESSION['fr_date']))
+									{
+										echo 'value="'.$_SESSION['fr_date'].'"';
+										unset($_SESSION['fr_date']);
+									}
+								?> name="date">
                             <label for="floatingDate"><i class="bi bi-calendar3"></i> Data</label>
                           </div>
-                          <div class="form-floating mb-3">
-                            <select class="form-select" id="floatingCategory" name="category">
+
+                          <?php
+						  if (isset($_SESSION['e_date']))
+						  {
+							  echo '<div class="error">'.$_SESSION['e_date'].'</div>';
+							  unset($_SESSION['e_date']);
+						  }
+                          ?>	
+
+                          <div class="form-floating mt-3">
+                            <select class="form-select <?php echo isset($_SESSION['fr_category']) ? 'has-value' : ''; ?>" id="floatingCategory" name="category">
                                 <option hidden disabled selected value></option>
-                                <option>Rachunki</option>
-                                <option>Jedzenie</option>
-                                <option>Odzież</option>
-                                <option>Rozrywka</option>
-                                <option>Inne</option>
+                                <option value="Rachunki" <?php if (isset($_SESSION['fr_category'])) {if ($_SESSION['fr_category'] == 'Rachunki') {echo 'selected'; unset($_SESSION['fr_category']);}}?>>Rachunki</option>
+                                <option value="Jedzenie" <?php if (isset($_SESSION['fr_category'])) {if ($_SESSION['fr_category'] == 'Jedzenie') {echo 'selected'; unset($_SESSION['fr_category']);}}?>>Jedzenie</option>
+                                <option value="Odzież"<?php if (isset($_SESSION['fr_category'])) {if ($_SESSION['fr_category'] == 'Odzież') {echo 'selected'; unset($_SESSION['fr_category']);}}?>>Odzież</option>
+                                <option value="Rozrywka" <?php if (isset($_SESSION['fr_category'])) {if ($_SESSION['fr_category'] == 'Rozrywka') {echo 'selected'; unset($_SESSION['fr_category']);}}?>>Rozrywka</option>
+                                <option value="Inne" <?php if (isset($_SESSION['fr_category'])) {if ($_SESSION['fr_category'] == 'Inne') {echo 'selected'; unset($_SESSION['fr_category']);}}?>>Inne</option>
                             </select>                            
                             <label for="floatingCategory"><i class="bi bi-tag"></i> Kategoria</label>
                           </div>
 
-                          <div class="form-floating mb-3">
-                            <select class="form-select" id="floatingMethod" name="category">
+                          <?php
+						  if (isset($_SESSION['e_category']))
+						  {
+							  echo '<div class="error">'.$_SESSION['e_category'].'</div>';
+							  unset($_SESSION['e_category']);
+						  }
+                          ?>
+
+                          <div class="form-floating mt-3">
+                            <select class="form-select <?php echo isset($_SESSION['fr_method']) ? 'has-value' : ''; ?>" id="floatingMethod" name="method">
                                 <option hidden disabled selected value></option>
-                                <option>Karta kredytowa</option>
-                                <option>Gotówka</option>
-                                <option>Karta debetowa</option>
+                                <option value="Karta kredytowa" <?php if (isset($_SESSION['fr_method'])) {if ($_SESSION['fr_method'] == 'Karta kredytowa') {echo 'selected'; unset($_SESSION['fr_method']);}}?>>Karta kredytowa</option>
+                                <option value="Gotówka" <?php if (isset($_SESSION['fr_method'])) {if ($_SESSION['fr_method'] == 'Gotówka') {echo 'selected'; unset($_SESSION['fr_method']);}}?>>Gotówka</option>
+                                <option value="Karta debetowa" <?php if (isset($_SESSION['fr_method'])) {if ($_SESSION['fr_method'] == 'Karta debetowa') {echo 'selected'; unset($_SESSION['fr_method']);}}?>>Karta debetowa</option>
                             </select>                            
                             <label for="floatingMethod"><i class="bi bi-credit-card"></i> Metoda płatności</label>
                           </div>
 
-                          <div class="form-floating mb-3">
-                            <input type="text" class="form-control" id="floatingDescription" placeholder="" name="value">
+                          <?php
+						  if (isset($_SESSION['e_method']))
+						  {
+							  echo '<div class="error">'.$_SESSION['e_method'].'</div>';
+							  unset($_SESSION['e_method']);
+						  }
+                          ?>	
+
+                          <div class="form-floating mt-3">
+                            <input type="text" class="form-control" id="floatingDescription" placeholder=""  
+								<?php
+									if (isset($_SESSION['fr_description']))
+									{
+										echo 'value="'.$_SESSION['fr_description'].'"';
+										unset($_SESSION['fr_description']);
+									}
+								?> name="description">
                             <label for="floatingDescription"><i class="bi bi-pencil"></i> Opis</label>
                           </div>
+
+                          <?php
+						  if (isset($_SESSION['e_description']))
+						  {
+							  echo '<div class="error">'.$_SESSION['e_description'].'</div>';
+							  unset($_SESSION['e_description']);
+						  }
+						  ?>	
                       
-                          <a class="btn btn-primary btn-xl col-12 col-sm-6 py-3 my-3" href="./home.php">Dodaj wydatek</a>
+                          <input type="submit" value="Dodaj wydatek" class="btn btn-primary btn-xl col-12 col-sm-6 py-3 my-3"/>
+
+                        <?php
+						  if (isset($_SESSION['expense_success']))
+						  {
+							  echo '<div class="success">Wydatek dodano pomyslnie!</div>';
+							  unset($_SESSION['expense_success']);
+						  }
+                          ?>	
                         </form>
                     </div>
                 </div>
