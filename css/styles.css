@@ -11059,3 +11059,13 @@ input::-webkit-inner-spin-button {
 input[type=number] {
   -moz-appearance: textfield;
 }
+
+.pie-chart {
+  height: 350px !important;
+}
+
+@media screen and (min-width: 992px) and (max-height: 900px) {
+  .pie-chart {
+      height: 150px !important;
+  }
+}

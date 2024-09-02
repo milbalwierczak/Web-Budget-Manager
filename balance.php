@@ -45,7 +45,7 @@
                 </div>
                 <div class="row gx-4 gx-lg-5 h-100 align-items-center justify-content-center text-center">
                     <div class="col-lg-6 align-self-baseline">
-                        <h2 class="text-white mt-0">Wydatki</h2>
+                        <h2 class="text-white mt-3">Wydatki</h2>
                         <div class="table-wrapper col-12">
                             <table class="table table-striped table-sm text-white ">
                                 <thead class="header">
@@ -110,7 +110,7 @@
                                 </tbody>
                               </table>
                         </div>
-                        <div class="container mt-1" style="height: 400px">
+                        <div class="container mt-1 pie-chart">
                             <canvas id="myChart"></canvas>
                           </div>
                           
@@ -129,13 +129,18 @@
                               },
                               options: {
                                 responsive: true,
-                                }       
+                                plugins: {
+                                    legend: {
+                                      display: false
+                                    }
+                                  }
+                                }  
                             });
                           </script>
                            
                     </div>
                     <div class="col-lg-6 align-self-baseline">
-                        <h2 class="text-white mt-0">Przychody</h2>
+                        <h2 class="text-white mt-3">Przychody</h2>
                         <div class="table-wrapper col-12">
                             <table class="table table-striped table-sm text-white ">
                                 <thead class="header">
@@ -187,7 +192,7 @@
                               </table>
                         </div>
                         
-                        <div class="container mt-1" style="height: 400px">
+                        <div class="container mt-1 pie-chart">
                             <canvas id="myChart2"></canvas>
                         </div>
                           <script>
@@ -203,7 +208,12 @@
                               },
                               options: {
                                 responsive: true,
-                                }       
+                                plugins: {
+                                    legend: {
+                                      display: false
+                                    }
+                                  }
+                                }  
                             });
                           </script>
                     </div>
