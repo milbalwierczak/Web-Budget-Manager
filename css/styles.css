@@ -2478,7 +2478,7 @@ textarea.form-control-lg {
 .form-floating > .form-control:focus ~ label,
 .form-floating > .form-control:not(:placeholder-shown) ~ label,
 .form-floating > .form-control-plaintext ~ label,
-.form-floating > .form-select ~ label {
+.form-floating > .form-select.has-value ~ label {
   opacity: 0.65;
   transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
 }
@@ -11031,6 +11031,12 @@ canvas {
   height: 10px;
 }
 
+.success {
+  color: greenyellow;
+  height: 20px;
+  font-weight: 700;
+}
+
 @media only screen and (max-width: 500px) {
   .g-recaptcha {
       transform:scale(0.77);
@@ -11040,4 +11046,16 @@ canvas {
 
 .g-recaptcha {
   display: inline-block;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
 }

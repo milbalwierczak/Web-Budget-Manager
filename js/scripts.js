@@ -61,3 +61,16 @@ window.addEventListener('DOMContentLoaded', event => {
     });
 
 });
+
+document.getElementById('floatingValue').addEventListener('blur', function() {
+    let value = parseFloat(this.value);
+    
+    // Sprawdzenie, czy wartość jest liczbą
+    if (!isNaN(value)) {
+        // Formatowanie do dwóch miejsc po przecinku
+        this.value = value.toFixed(2);
+    } else {
+        // Jeśli wartość nie jest liczbą, ustaw na 0.00
+        this.value = '0.00';
+    }
+});
