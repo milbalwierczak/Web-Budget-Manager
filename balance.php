@@ -9,8 +9,60 @@
 	}
   else {
 
-  $start_date = date('Y-m-01');
-  $end_date = date('Y-m-t');
+
+	if (isset($_POST['dateStart']))
+	{    
+		$validation_OK=true;
+
+    if (!empty($_POST['dateStart']) && !empty($_POST['dateEnd'])){      
+      $formated_start_date = DateTime::createFromFormat('d-m-Y', $_POST['dateStart'])->format('Y-m-d');
+      $formated_end_date = DateTime::createFromFormat('d-m-Y', $_POST['dateEnd'])->format('Y-m-d');
+      
+      if ($formated_start_date > $formated_end_date) {      
+        $validation_OK=false;
+        $_SESSION['e_dateEnd']='"Data od" nie może być później niż "data do"';
+      }
+    }
+    else if (empty($_POST['dateStart']) && empty($_POST['dateEnd'])){
+      $validation_OK=false;
+			$_SESSION['e_dateStart']="Pole nie może być puste";
+			$_SESSION['e_dateEnd']="Pole nie może być puste";
+    }
+    else if (empty($_POST['dateStart'])){
+      $validation_OK=false;
+			$_SESSION['e_dateStart']="Pole nie może być puste";
+    }
+    else {      
+      $validation_OK=false;
+			$_SESSION['e_dateEnd']="Pole nie może być puste";
+    }
+
+    //Zapamiętaj wprowadzone dane
+		$_SESSION['fr_dateStart'] = $_POST['dateStart'];
+		$_SESSION['fr_dateEnd'] = $_POST['dateEnd'];
+        
+    		
+		if ($validation_OK==true)
+		{
+      $start_date = $formated_start_date;
+      $end_date = $formated_end_date;
+      if (isset($_SESSION['fr_dateStart'])) unset($_SESSION['fr_dateStart']);
+      if (isset($_SESSION['fr_dateEnd'])) unset($_SESSION['fr_dateEnd']);
+      if (isset($_SESSION['e_dateStart'])) unset($_SESSION['e_dateStart']);
+      if (isset($_SESSION['e_dateEnd'])) unset($_SESSION['e_dateEnd']);
+    }
+    else {
+      $_SESSION['show_modal']=true;
+      $start_date = date('Y-m-01');
+      $end_date = date('Y-m-t');
+    }
+
+	}
+  else {
+    $start_date = date('Y-m-01');
+    $end_date = date('Y-m-t');
+  }
+
   $total_income = 0;
   $total_expense = 0;
 
@@ -101,6 +153,12 @@
         <link href="https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic" rel="stylesheet" type="text/css">
         <link href="css/styles.css" rel="stylesheet">
 
+        <style>
+            .datepicker {
+              z-index: 1600 !important; /* has to be larger than 1050 */
+            }
+        </style>
+
     </head>
     <body id="page-top">
         <!-- Navigation-->
@@ -130,8 +188,71 @@
                       ?>
                     </div>
                     <div class="col-lg-4 align-self-center">
-                        <a class="btn btn-primary btn-xl mb-3 mb-sm-0">Ustaw zakres dat</a></div>
+                        <button type="button" class="btn btn-primary btn-xl mb-3 mb-sm-0" data-bs-toggle="modal" data-bs-target="#exampleModalCenter">
+                      Ustaw zakres dat
+                        </button>   
+                    </div>
+
+                <!-- Modal -->
+                <div class="modal fade" id="exampleModalCenter" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalCenterTitle">Ustaw zakres dat</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>                      
+                      <form method="post">
+                      <div class="modal-body">
+                          <div class="form-floating">
+                              <input type="text" class="form-control" id="floatingDateStart" placeholder=""   
+                              <?php
+                                if (isset($_SESSION['fr_dateStart']))
+                                {
+                                  echo 'value="'.$_SESSION['fr_dateStart'].'"';
+                                  unset($_SESSION['fr_dateStart']);
+                                }
+                              ?> autocomplete="off" name="dateStart">
+                            <label for="floatingDateStart"><i class="bi bi-calendar3"></i> Data od</label>
+                          </div>  
+                                                  
+                          <?php
+                            if (isset($_SESSION['e_dateStart']))
+                            {
+                              echo '<div class="error">'.$_SESSION['e_dateStart'].'</div>';
+                              unset($_SESSION['e_dateStart']);
+                            }
+                          ?>
+
+                          <div class="form-floating mt-3">
+                                  <input type="text" class="form-control" id="floatingDateEnd" placeholder=""  
+                              <?php
+                                if (isset($_SESSION['fr_dateEnd']))
+                                {
+                                  echo 'value="'.$_SESSION['fr_dateEnd'].'"';
+                                  unset($_SESSION['fr_dateEnd']);
+                                }
+                              ?> autocomplete="off" name="dateEnd">
+                            <label for="floatingDateEnd"><i class="bi bi-calendar3"></i> Data do</label>
+                          </div>  
+                                                  
+                          <?php
+                            if (isset($_SESSION['e_dateEnd']))
+                            {
+                              echo '<div class="error">'.$_SESSION['e_dateEnd'].'</div>';
+                              unset($_SESSION['e_dateEnd']);
+                            }
+                          ?>
+                          
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+                        <input type="submit" value="Zapisz zmiany" class="btn btn-primary" data-bs-dismiss="modal"/>
+                      </div>
+                      </form>
+                    </div>
+                  </div>
                 </div>
+              
                 <div class="row gx-4 gx-lg-5 align-items-center justify-content-center text-center">
                     <div class="col-lg-6 align-self-baseline">
                         <h2 class="text-white mt-3">Wydatki</h2>
@@ -254,6 +375,11 @@
         </script>
         
         <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+        <script src= 
+    "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"> 
+        </script>    
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.css" rel="stylesheet">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.pl.min.js"></script>
         <!-- Bootstrap core JS-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
         <!-- SimpleLightbox plugin JS-->
@@ -265,6 +391,37 @@
         <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
         <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
         <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="./js/select.js"></script>
+
+        <script>
+            $('#floatingDateStart').datepicker({
+                format: "dd-mm-yyyy",
+                maxViewMode: 0,
+                language: "pl",
+                todayHighlight: true,
+                autoclose: true  
+            });
+
+            $('#floatingDateEnd').datepicker({
+                format: "dd-mm-yyyy",
+                maxViewMode: 0,
+                language: "pl",
+                todayHighlight: true,
+                autoclose: true  
+            });
+
+        </script>
+
+                
+                
+        <script>
+            $(document).ready(function() {
+              <?php if (isset($_SESSION['show_modal']) && $_SESSION['show_modal']): ?>
+                $('#exampleModalCenter').modal('show');
+                <?php unset($_SESSION['show_modal']); ?>
+              <?php endif; ?>
+            });
+        </script>
+
     </body>
 </html>
