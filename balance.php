@@ -1,3 +1,89 @@
+<?php
+
+	session_start();
+	
+	if (!isset($_SESSION['logged_in']))
+	{
+		header('Location: index.php');
+		exit();
+	}
+  else {
+
+  $start_date = date('Y-m-01');
+  $end_date = date('Y-m-t');
+  $total_income = 0;
+  $total_expense = 0;
+
+      $logged_user_id = $_SESSION['logged_user_id'];
+
+  require_once 'database.php';
+
+      $query = $db->prepare('SELECT e.id, e.amount, e.date_of_expense, c.name FROM expenses AS e, 
+      expenses_category_assigned_to_users AS c WHERE e.expense_category_assigned_to_user_id = c.id 
+      AND e.user_id = :user_id AND e.date_of_expense BETWEEN :start_date AND :end_date ORDER BY e.date_of_expense ASC');
+      $query->bindValue(':user_id', $logged_user_id, PDO::PARAM_INT);
+      $query->bindValue(':start_date', $start_date, PDO::PARAM_STR);
+      $query->bindValue(':end_date', $end_date, PDO::PARAM_STR);
+      $query->execute();
+      $expenses = $query->fetchAll(PDO::FETCH_ASSOC);
+
+      $query = $db->prepare('SELECT i.id, i.amount, i.date_of_income, c.name FROM incomes AS i, 
+      incomes_category_assigned_to_users AS c WHERE i.income_category_assigned_to_user_id = c.id 
+      AND i.user_id = :user_id AND i.date_of_income BETWEEN :start_date AND :end_date  ORDER BY i.date_of_income ASC');
+      $query->bindValue(':user_id', $logged_user_id, PDO::PARAM_INT);
+      $query->bindValue(':start_date', $start_date, PDO::PARAM_STR);
+      $query->bindValue(':end_date', $end_date, PDO::PARAM_STR);
+      $query->execute();
+      $incomes = $query->fetchAll(PDO::FETCH_ASSOC);
+
+      foreach ($incomes as $income) {
+        $total_income += $income['amount'];
+      }
+
+      foreach ($expenses as $expense) {
+        $total_expense += $expense['amount'];
+      }
+
+      $balance = $total_income - $total_expense;
+
+      $query = $db->prepare('SELECT SUM(e.amount) AS total_amount, c.name FROM expenses AS e, 
+      expenses_category_assigned_to_users AS c WHERE e.expense_category_assigned_to_user_id = c.id 
+      AND e.user_id = :user_id AND e.date_of_expense BETWEEN :start_date AND :end_date GROUP BY c.name ORDER BY total_amount DESC');
+      $query->bindValue(':user_id', $logged_user_id, PDO::PARAM_INT);
+      $query->bindValue(':start_date', $start_date, PDO::PARAM_STR);
+      $query->bindValue(':end_date', $end_date, PDO::PARAM_STR);
+      $query->execute();
+      $expenses_categories = $query->fetchAll(PDO::FETCH_ASSOC);
+
+      $expenses_labels = [];
+      $expenses_data = [];
+
+      foreach ($expenses_categories as $category) {
+          $expenses_labels[] = htmlspecialchars($category['name']);
+          $expenses_data[] = htmlspecialchars($category['total_amount']);
+      }
+    
+      $query = $db->prepare('SELECT SUM(i.amount) AS total_amount, c.name FROM incomes AS i, 
+      incomes_category_assigned_to_users AS c WHERE i.income_category_assigned_to_user_id = c.id 
+      AND i.user_id = :user_id AND i.date_of_income BETWEEN :start_date AND :end_date GROUP BY c.name ORDER BY total_amount DESC');
+      $query->bindValue(':user_id', $logged_user_id, PDO::PARAM_INT);
+      $query->bindValue(':start_date', $start_date, PDO::PARAM_STR);
+      $query->bindValue(':end_date', $end_date, PDO::PARAM_STR);
+      $query->execute();
+      $incomes_categories = $query->fetchAll(PDO::FETCH_ASSOC);
+
+      $incomes_labels = [];
+      $incomes_data = [];
+
+      foreach ($incomes_categories as $category) {
+          $incomes_labels[] = htmlspecialchars($category['name']);
+          $incomes_data[] = htmlspecialchars($category['total_amount']);
+      }
+    
+
+  }
+?>
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -38,12 +124,15 @@
             <div class="container px-4 px-lg-5 h-100">
                 <div class="row gx-4 gx-lg-5 align-items-center justify-content-center text-center">
                     <div class="col-lg-8 align-self-end">
-                        <h2 class="text-white">Bilans w okresie od 01-07-2024 do 31-07-2024: 1234,56 zł</h2>
+                      <?php
+                        echo '<h2 class="text-white">Bilans w okresie od '.htmlspecialchars(date('d-m-Y', strtotime($start_date))).
+                        ' do '.htmlspecialchars(date('d-m-Y', strtotime($end_date))).': '.htmlspecialchars(number_format($balance, 2, ',', '')).' zł</h2>'
+                      ?>
                     </div>
                     <div class="col-lg-4 align-self-center">
                         <a class="btn btn-primary btn-xl mb-3 mb-sm-0">Ustaw zakres dat</a></div>
                 </div>
-                <div class="row gx-4 gx-lg-5 h-100 align-items-center justify-content-center text-center">
+                <div class="row gx-4 gx-lg-5 align-items-center justify-content-center text-center">
                     <div class="col-lg-6 align-self-baseline">
                         <h2 class="text-white mt-3">Wydatki</h2>
                         <div class="table-wrapper col-12">
@@ -58,55 +147,15 @@
                                   </tr>
                                 </thead>
                                 <tbody>
-                                  <tr>
-                                    <td>1</td>
-                                    <td>15,78</td>
-                                    <td>01-07-2024</td>
-                                    <td>Jedzenie</td>
-                                    <td><a class="text-reset text-decoration-none description">Kliknij</a></td>
-                                  </tr>
-                                  <tr>
-                                    <td>2</td>
-                                    <td>59,99</td>
-                                    <td>02-07-2024</td>
-                                    <td>Rachunki</td>
-                                    <td><a class="text-reset text-decoration-none description">Kliknij</a></td>
-                                  </tr>
-                                  <tr>
-                                    <td>3</td>
-                                    <td>100</td>
-                                    <td>03-07-2024</td>
-                                    <td>Rachunki</td>
-                                    <td><a class="text-reset text-decoration-none description">Kliknij</a></td>
-                                  </tr>
-                                  <tr>
-                                    <td>4</td>
-                                    <td>123,15</td>
-                                    <td>04-07-2024</td>
-                                    <td>Rozrywka</td>
-                                    <td><a class="text-reset text-decoration-none description">Kliknij</a></td>
-                                  </tr>
-                                  <tr>
-                                    <td>5</td>
-                                    <td>99,99</td>
-                                    <td>05-07-2024</td>
-                                    <td>Rachunki</td>
-                                    <td><a class="text-reset text-decoration-none description">Kliknij</a></td>
-                                  </tr>
-                                  <tr>
-                                    <td>6</td>
-                                    <td>1024,00</td>
-                                    <td>06-07-2024</td>
-                                    <td>Rachunki</td>
-                                    <td><a class="text-reset text-decoration-none description">Kliknij</a></td>
-                                  </tr>
-                                  <tr>
-                                    <td>7</td>
-                                    <td>57,88</td>
-                                    <td>07-07-2024</td>
-                                    <td>Jedzenie</td>
-                                    <td><a class="text-reset text-decoration-none description">Kliknij</a></td>
-                                  </tr>
+                                <?php foreach ($expenses as $index => $expense): 
+                                       echo '<tr>';
+                                       echo '<td>'.($index+1).'</td>';
+                                       echo '<td>'.htmlspecialchars(number_format($expense['amount'], 2, ',', '')).'</td>';
+                                       echo '<td>'.htmlspecialchars(date('d-m-Y', strtotime($expense['date_of_expense']))).'</td>';
+                                       echo '<td>'.htmlspecialchars($expense['name']).'</td>';
+                                       echo '<td><a class="text-reset text-decoration-none description" href="#">Kliknij</a></td>';
+                                       echo '</tr>';
+                                endforeach; ?>
                                 </tbody>
                               </table>
                         </div>
@@ -122,9 +171,9 @@
                             new Chart(ctx, {
                               type: 'pie',
                               data: {
-                                labels: ['Rozrywka', 'Jedzenie', 'Rachunki'],
+                                labels: <?php echo json_encode($expenses_labels); ?>,
                                 datasets: [{
-                                  data: [100,200,1000]
+                                  data: <?php echo json_encode($expenses_data); ?>
                                 }]
                               },
                               options: {
@@ -153,41 +202,15 @@
                                   </tr>
                                 </thead>
                                 <tbody>
-                                  <tr>
-                                    <td>1</td>
-                                    <td>3315,78</td>
-                                    <td>01-07-2024</td>
-                                    <td>Wypłata</td>
-                                    <td><a class="text-reset text-decoration-none description">Kliknij</a></td>
-                                  </tr>
-                                  <tr>
-                                    <td>2</td>
-                                    <td>15,23</td>
-                                    <td>02-07-2024</td>
-                                    <td>Odsetki</td>
-                                    <td><a class="text-reset text-decoration-none description">Kliknij</a></td>
-                                  </tr>
-                                  <tr>
-                                    <td>3</td>
-                                    <td>100</td>
-                                    <td>03-07-2024</td>
-                                    <td>Sprzedaż</td>
-                                    <td><a class="text-reset text-decoration-none description">Kliknij</a></td>
-                                  </tr>
-                                  <tr>
-                                    <td>4</td>
-                                    <td>123,15</td>
-                                    <td>04-07-2024</td>
-                                    <td>Sprzedaż</td>
-                                    <td><a class="text-reset text-decoration-none description">Kliknij</a></td>
-                                  </tr>
-                                  <tr>
-                                    <td>5</td>
-                                    <td>99,99</td>
-                                    <td>05-07-2024</td>
-                                    <td>Sprzedaż</td>
-                                    <td><a class="text-reset text-decoration-none description">Kliknij</a></td>
-                                  </tr>
+                                  <?php foreach ($incomes as $index => $income): 
+                                        echo '<tr>';
+                                        echo '<td>'.($index+1).'</td>';
+                                        echo '<td>'.htmlspecialchars(number_format($income['amount'], 2, ',', '')) . '</td>';
+                                        echo '<td>'.htmlspecialchars(date('d-m-Y', strtotime($income['date_of_income']))).'</td>';
+                                        echo '<td>'.htmlspecialchars($income['name']).'</td>';
+                                        echo '<td><a class="text-reset text-decoration-none description" href="#">Kliknij</a></td>';
+                                        echo '</tr>';
+                                  endforeach; ?>
                                 </tbody>
                               </table>
                         </div>
@@ -201,9 +224,9 @@
                             new Chart(ctx2, {
                               type: 'pie',
                               data: {
-                                labels: ['Sprzedaż', 'Odsetki', 'Wypłata'],
+                                labels: <?php echo json_encode($incomes_labels); ?>,
                                 datasets: [{
-                                  data: [200,50,3200]
+                                  data: <?php echo json_encode($incomes_data); ?>
                                 }]
                               },
                               options: {

@@ -10996,7 +10996,7 @@ header.masthead h1, header.masthead .h1 {
 }
 
 .table-wrapper {
-  max-height: 200px;
+  height: 200px;
   overflow: auto;
   display:inline-block;
 }
@@ -11013,7 +11013,7 @@ header.masthead h1, header.masthead .h1 {
 
 @media (max-width: 576px) {
   .table-wrapper {
-    max-height: 400px;
+    height: 400px;
   }
 }
 

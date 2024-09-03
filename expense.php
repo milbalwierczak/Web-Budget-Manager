@@ -174,7 +174,7 @@
                           <h2 class="text-white font-weight-bold mb-5 mt-0">Wprowadź dane</h2>
                       
                           <div class="form-floating">
-                            <input type="number" class="form-control" id="floatingValue" placeholder=""  
+                            <input type="number"  step=0.01 class="form-control" id="floatingValue" placeholder=""  
 								<?php
 									if (isset($_SESSION['fr_value']))
 									{
