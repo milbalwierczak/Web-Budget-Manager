@@ -41,6 +41,40 @@ if ($result) {
     $author = "Francis Bacon";
 }
 
+$start_date = date('Y-m-01');
+$end_date = date('Y-m-t');
+$logged_user_id = $_SESSION['logged_user_id'];
+
+try {
+    $query = $db->prepare('SELECT SUM(e.amount) AS sum_expenses FROM expenses AS e
+     WHERE e.user_id = :user_id AND e.date_of_expense BETWEEN :start_date AND :end_date');
+    $query->bindValue(':user_id', $logged_user_id, PDO::PARAM_INT);
+    $query->bindValue(':start_date', $start_date, PDO::PARAM_STR);
+    $query->bindValue(':end_date', $end_date, PDO::PARAM_STR);
+    $query->execute();
+    $sum_expenses = $query->fetch(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    echo 'Błąd zapytania: ' . $e->getMessage();
+}
+
+$total_expenses = isset($sum_expenses['sum_expenses']) ? $sum_expenses['sum_expenses'] : 0;
+
+try {
+    $query = $db->prepare('SELECT SUM(i.amount) AS sum_incomes FROM incomes AS i
+     WHERE i.user_id = :user_id AND i.date_of_income BETWEEN :start_date AND :end_date');
+    $query->bindValue(':user_id', $logged_user_id, PDO::PARAM_INT);
+    $query->bindValue(':start_date', $start_date, PDO::PARAM_STR);
+    $query->bindValue(':end_date', $end_date, PDO::PARAM_STR);
+    $query->execute();
+    $sum_incomes = $query->fetch(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    echo 'Błąd zapytania: ' . $e->getMessage();
+}
+
+$total_incomes = isset($sum_incomes['sum_incomes']) ? $sum_incomes['sum_incomes'] : 0;
+
+$balance = $total_incomes - $total_expenses;
+
 ?>
 
 
@@ -93,11 +127,12 @@ if ($result) {
                         ?>!</h1>
                 </div>
                 <div class="col-lg-8 align-self-baseline">
-                    <h2 class="text-white-75">Twój bilans w tym miesiącu wynosi 1234,56 zł</h2>
+                    <h2 class="text-white-75">Twój bilans w tym miesiącu wynosi <?php
+                                                                                echo htmlspecialchars(number_format($balance, 2, ',', '')) ?> zł </h2>
                     <hr class="divider">
                     <p class="text-white fs-2">Cytat na dzisiaj:</p>
-                    <p class="text-start text-white-75 fst-italic fs-4"><?php echo $quote; ?></p>
-                    <p class="text-end text-white-75 mb-5"><?php echo $author; ?></p>
+                    <p class="text-start text-white-75 fst-italic fs-4"><?php echo htmlspecialchars($quote); ?></p>
+                    <p class="text-end text-white-75 mb-5"><?php echo htmlspecialchars($author); ?></p>
                     <a class="btn btn-success btn-xl me-sm-4 mb-3 mb-sm-0" href="./income.php">+ Dodaj przychód</a>
                     <a class="btn btn-danger btn-xl me-sm-4 mb-3 mb-sm-0" href="./expense.php">- Dodaj wydatek</a>
                     <a class="btn btn-primary btn-xl mb-3 mb-sm-0" href="./balance.php"><i class="bi bi-graph-up"></i> Przeglądaj bilans</a>
