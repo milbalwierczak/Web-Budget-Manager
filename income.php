@@ -132,7 +132,7 @@
                         <li class="nav-item"><a class="nav-link" href="./home.php"><i class="bi bi-house"></i> Strona główna</a></li>
                         <li class="nav-item"><a class="nav-link" href="./income.php">+ Dodaj przychód</a></li>
                         <li class="nav-item"><a class="nav-link" href="./expense.php">- Dodaj wydatek</a></li>
-                        <li class="nav-item"><a class="nav-link" href="./balance.html"><i class="bi bi-graph-up"></i> Przeglądaj bilans</a></li>
+                        <li class="nav-item"><a class="nav-link" href="./balance.php"><i class="bi bi-graph-up"></i> Przeglądaj bilans</a></li>
                         <li class="nav-item"><a class="nav-link" href="./logout.php"><i class="bi bi-box-arrow-right"></i> Wyloguj się</a></li>
                     </ul>
                 </div>
@@ -147,7 +147,7 @@
                           <h2 class="text-white font-weight-bold mb-5 mt-0">Wprowadź dane</h2>
                       
                           <div class="form-floating">
-                            <input type="number" class="form-control" id="floatingValue" placeholder=""  
+                            <input type="number" step=0.01 class="form-control" id="floatingValue" placeholder=""  
 								<?php
 									if (isset($_SESSION['fr_value']))
 									{
@@ -252,7 +252,7 @@
     "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"> 
         </script>    
         <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.css" rel="stylesheet">
-        <script src="./js/bootstrap-datepicker.pl.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.pl.min.js"></script>
         <!-- Bootstrap core JS-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
         <!-- SimpleLightbox plugin JS-->
