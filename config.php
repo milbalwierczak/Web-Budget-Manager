@@ -1,7 +1,7 @@
 <?php
 
 return [
-	'host' => 'localhost', 
+	'host' => 'localhost',
 	'user' => 'root',
 	'password' => '',
 	'database' => 'budget_app'
