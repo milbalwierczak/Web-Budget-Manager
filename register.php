@@ -43,17 +43,6 @@ if (isset($_POST['email'])) {
 
 	$password_h = password_hash($password1, PASSWORD_DEFAULT);
 
-	$secret = "6Le1UiUqAAAAAAwig1K-UaQ-UF2W9vKdy7t0h2cR";
-
-	$chceck_captcha = file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret=' . $secret . '&response=' . $_POST['g-recaptcha-response']);
-
-	$answer = json_decode($chceck_captcha);
-
-	if ($answer->success == false) {
-		$validation_OK = false;
-		$_SESSION['e_bot'] = "Potwierdź, że nie jesteś botem!";
-	}
-
 	$_SESSION['fr_name'] = $name;
 	$_SESSION['fr_email'] = $email;
 
@@ -220,16 +209,6 @@ if (isset($_POST['email'])) {
 							<input type="password" class="form-control" id="floatingPasswordRepeat" placeholder="" name="password2">
 							<label for="floatingPasswordRepeat"><i class="bi bi-key"></i> Powtórz Hasło</label>
 						</div>
-
-						<div class="text-xs-center">
-							<div class="g-recaptcha mt-3" data-sitekey="6Le1UiUqAAAAAB6kjiZE_wUpJpMU3XOj4L2rezLa"></div>
-						</div>
-						<?php
-						if (isset($_SESSION['e_bot'])) {
-							echo '<div class="error">' . $_SESSION['e_bot'] . '</div>';
-							unset($_SESSION['e_bot']);
-						}
-						?>
 
 						<input type="submit" value="Załóż konto" class="btn btn-primary btn-xl col-12 col-sm-6 py-3 my-3" />
 					</form>
